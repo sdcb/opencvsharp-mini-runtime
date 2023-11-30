@@ -1,43 +1,94 @@
-# 启动容器：
-docker run -it --rm --name cvsharp-test-centos7 centos:7
+# 在CentOS7上编译OpenCvSharp
 
-# 安装dotnet 7
-rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-yum install dotnet-sdk-7.0 -y
-
-# 安装相关OpenVINO依赖以及ca-certificates
-yum install -y epel-release
-yum install -y ca-certificates wget pugixml-devel
-
-wget https://storage.openvinotoolkit.org/repositories/openvino/packages/2023.1/linux/l_openvino_toolkit_centos7_2023.1.0.12185.47b736f63ed_x86_64.tgz
-mkdir /tbb-temp
-tar -xvzf l_openvino_toolkit_centos7_2023.1.0.12185.47b736f63ed_x86_64.tgz -C /tbb-temp/
-cp /tbb-temp/l_openvino_toolkit_centos7_2023.1.0.12185.47b736f63ed_x86_64/runtime/3rdparty/tbb/lib/libtbb.so.12.2 /lib64/libtbb.so.12
-rm -f l_openvino_toolkit_centos7_2023.1.0.12185.47b736f63ed_x86_64.tgz
-rm -rf /tbb-temp
+# 安装较新的gcc版本：
+yum install centos-release-scl -y && yum install devtoolset-9-gcc devtoolset-9-gcc-c++ devtoolset-9-binutils -y && source scl_source enable devtoolset-9
+# 确认gcc版本是否提高了
+gcc --version
+# 安装cmake3、gcc9和其它必要东西
+yum install epel-release -y && yum update -y && yum install -y \
+  cmake3 \
+  wget \
+  unzip \
+  ca-certificates \
+  make \
+  git
 
 
-mkdir /ocr-test && cd /ocr-test && dotnet new console
-dotnet add package Sdcb.OpenVINO
-dotnet add package Sdcb.OpenVINO.PaddleOCR
-dotnet add package Sdcb.OpenVINO.PaddleOCR.Models.Online
-dotnet add package Sdcb.OpenVINO.runtime.centos.7-x64
-dotnet add package Sdcb.OpenCvSharp4.mini.runtime.centos.7-x64 -v 4.8.0.20230708-preview.2 -s https://proget.starworks.cc:88/nuget/test/v3/index.json
+准备配置OpenCV：
+OPENCV_VERSION=4.8.0
+wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip && \
+    unzip ${OPENCV_VERSION}.zip && \
+    rm -f ${OPENCV_VERSION}.zip && \
+    mv opencv-${OPENCV_VERSION} opencv && \
+    wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip && \
+    unzip ${OPENCV_VERSION}.zip && \
+    rm -f ${OPENCV_VERSION}.zip && \
+    mv opencv_contrib-${OPENCV_VERSION} opencv_contrib
+cd opencv && mkdir build && cd build && \
+    cmake3 \
+    -D CMAKE_BUILD_TYPE=RELEASE \
+    -D OPENCV_EXTRA_MODULES_PATH=/opencv_contrib/modules \
+    -D BUILD_SHARED_LIBS=OFF \
+    -D ENABLE_CXX11=ON \
+    -D BUILD_EXAMPLES=OFF \
+    -D BUILD_DOCS=OFF \
+    -D BUILD_PERF_TESTS=OFF \
+    -D BUILD_TESTS=OFF \
+    -D BUILD_JAVA=OFF \
+    -D BUILD_LIST=core,imgproc,imgcodecs \
+    -D BUILD_PNG=ON \
+    -D BUILD_TIFF=ON \
+    -D WITH_GSTREAMER=OFF \
+    -D WITH_ADE=OFF \
+    -D WITH_FFMPEG=OFF \
+    -D WITH_V4L=OFF \
+    -D WITH_1394=OFF \
+    -D WITH_GTK=OFF \
+    -D WITH_OPENEXR=OFF \
+    -D WITH_PROTOBUF=OFF \
+    -D WITH_QUIRC=OFF \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    ..
+# 在默认的centos7-arm64中，webp编译不了，因为是gcc4，升级到gcc9试试 
+# 编译OpenCV：
+make -j$(nproc)
 
-echo 'using OpenCvSharp;
-using Sdcb.OpenVINO;
-using Sdcb.OpenVINO.PaddleOCR;
-using Sdcb.OpenVINO.PaddleOCR.Models;
-using Sdcb.OpenVINO.PaddleOCR.Models.Online;
+# 下载并准备OpenCvSharp
+cd / && git clone https://github.com/shimat/opencvsharp.git && cd opencvsharp && git checkout 4.8.0.20230711
+sed -i '42s/.*/ /;44,70s/.*/ /' /opencvsharp/src/OpenCvSharpExtern/include_opencv.h
+sed -i '451,585s/.*/ /' /opencvsharp/src/OpenCvSharpExtern/std_vector.h
+sed -i '12s/.*/file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)/' /opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
+mkdir /opencvsharp/make && cd /opencvsharp/make && \
+cmake3 \
+  -D CMAKE_INSTALL_PREFIX=/opencvsharp/make \
+  -D OpenCV_DIR=/opencv/build \
+    /opencvsharp/src
+make -j$(nproc)
+ls -l /opencvsharp/make/OpenCvSharpExtern/libOpenCvSharpExtern.so
+strip /opencvsharp/make/OpenCvSharpExtern/libOpenCvSharpExtern.so
+ls -l /opencvsharp/make/OpenCvSharpExtern/libOpenCvSharpExtern.so
+ldd /opencvsharp/make/OpenCvSharpExtern/libOpenCvSharpExtern.so
 
-FullOcrModel model = await OnlineFullModels.ChineseV4.DownloadAsync();
-using Mat src = Cv2.ImDecode(await new HttpClient().GetByteArrayAsync("https://io.starworks.cc:88/paddlesharp/ocr/samples/xdr5450.webp"), ImreadModes.Color);
-using PaddleOcrAll all = new(model, new DeviceOptions("CPU"))
+
+# 从docker拷到外面来（从外面的机子运行）
+mkdir ~/artifacts/cvsharp/centos7-arm64 && ~/artifacts/cvsharp/centos7-arm64
+docker cp cvsharp-centos7:/opencvsharp/make/OpenCvSharpExtern/libOpenCvSharpExtern.so .
+
+# 从新机子测试
+docker run -it --rm --name cvsharp-centos7-test centos:7
+yum update -y && yum install -y gcc
+mkdir /mylib
+## 然后将之前的libOpenCvSharpExtern.so拷到docker中：
+docker cp libOpenCvSharpExtern.so cvsharp-centos7-test:/mylib/
+## docker运行test.c
+echo '#include <stdio.h>
+int core_Mat_sizeof();
+int main()
 {
-    Enable180Classification = true,
-    AllowRotateDetection = true,
-};
-PaddleOcrResult result = all.Run(src);
-Console.WriteLine($"检测结果：\n{result.Text}");
-' > Program.cs
-dotnet run
+        int i = core_Mat_sizeof();
+        printf("sizeof(Mat) = %d\n", i);
+        return 0;
+}' > /test.c
+gcc test.c -L/mylib -lOpenCvSharpExtern -o test
+./test # 由于没有链接到libOpenCvSharpExtern.so，所以肯定无法运行
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mylib ./test # 可以运行，期望输出sizeof(Mat) = 96
