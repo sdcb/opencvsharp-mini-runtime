@@ -15,6 +15,8 @@ mini runtime that suitable for model inference in server, only `core`, `imgproc`
 | Sdcb.OpenCvSharp4.mini.runtime.ubuntu.22.04-x64   | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.ubuntu.22.04-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.ubuntu.22.04-x64) | 17.47MB | Ubuntu 22.04 | x64   |
 | Sdcb.OpenCvSharp4.mini.runtime.android-arm64      | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.android-arm64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.android-arm64) | 4.04MB  | Android      | ARM64 |
 | Sdcb.OpenCvSharp4.mini.runtime.android-x64      | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.android-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.android-x64) | 5.9MB  | Android      | x64 |
+| Sdcb.OpenCvSharp4.mini.runtime.android-x64      | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.android-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.android-x64) | 5.9MB  | Android      | x64 |
+| Sdcb.OpenCvSharp4.mini.runtime.linux-loongarch64  | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.linux-loongarch64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.linux-loongarch64) | 4.68MB  | Linux/Loongnix | loongarch64 |
 
 # Build docs/instructions
 * [Android](./build-docs/android.md)
