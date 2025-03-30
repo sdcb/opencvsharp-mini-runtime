@@ -135,7 +135,7 @@ jobs:
         ls -lR
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: opencvsharp-${{ env.OPENCVSHARP_VERSION }}-ubuntu-linux-x64
         path: artifacts
