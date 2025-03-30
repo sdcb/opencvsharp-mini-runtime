@@ -41,7 +41,7 @@ jobs:
         cd opencv && mkdir build && cd build && \
         cmake \
           -D CMAKE_BUILD_TYPE=RELEASE \
-          -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+          -D OPENCV_EXTRA_MODULES_PATH=${{ github.workspace }}/opencv_contrib/modules \
           -D BUILD_SHARED_LIBS=OFF \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
@@ -82,21 +82,21 @@ jobs:
 
     - name: Apply Patches
       run: |
-        sed -i '42s/.*/ /;44,70s/.*/ /' /opencvsharp/src/OpenCvSharpExtern/include_opencv.h
-        cat ~/opencvsharp/src/OpenCvSharpExtern/include_opencv.h
+        sed -i '42s/.*/ /;44,70s/.*/ /' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/include_opencv.h
+        cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/include_opencv.h
 
-        sed -i '451,585s/.*/ /' /opencvsharp/src/OpenCvSharpExtern/std_vector.h
-        cat ~/opencvsharp/src/OpenCvSharpExtern/std_vector.h
+        sed -i '451,585s/.*/ /' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/std_vector.h
+        cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/std_vector.h
 
-        sed -i '12s/.*/file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)/' /opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
-        cat ~/opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
+        sed -i '12s/.*/file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)/' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
+        cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
 
     - name: Configure OpenCvSharp
       run: |
         cd opencvsharp && mkdir build && cd build && \
         cmake \
-          -D CMAKE_INSTALL_PREFIX=~/opencvsharp/build \
-          -D OpenCV_DIR=~/opencv/build \
+          -D CMAKE_INSTALL_PREFIX=${{ github.workspace }}/opencvsharp/build \
+          -D OpenCV_DIR=${{ github.workspace }}/opencv/build \
           ../src
 
     - name: Build OpenCvSharp
