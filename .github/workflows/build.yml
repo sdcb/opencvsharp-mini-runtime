@@ -94,7 +94,7 @@ jobs:
     - name: Configure OpenCvSharp
       run: |
         cd opencvsharp && mkdir build && cd build && \
-        cmake3 \
+        cmake \
           -D CMAKE_INSTALL_PREFIX=/opencvsharp/build \
           -D OpenCV_DIR=/opencv/build \
           ../src
