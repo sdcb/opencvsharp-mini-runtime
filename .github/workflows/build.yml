@@ -82,14 +82,20 @@ jobs:
 
     - name: Apply Patches
       run: |
+        echo "::group::Patching include_opencv.h"
         sed -i '42s/.*/ /;44,70s/.*/ /' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/include_opencv.h
         cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/include_opencv.h
-
+        echo "::endgroup::"
+  
+        echo "::group::Patching std_vector.h"
         sed -i '451,585s/.*/ /' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/std_vector.h
         cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/std_vector.h
-
+        echo "::endgroup::"
+  
+        echo "::group::Patching CMakeLists.txt"
         sed -i '12s/.*/file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)/' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
         cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
+        echo "::endgroup::"
 
     - name: Configure OpenCvSharp
       run: |
@@ -107,7 +113,7 @@ jobs:
       run: |
         cd opencvsharp/build
         ls -lR
-        ldd libOpenCvSharpExtern.so
+        ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
 
     - name: Test OpenCvSharp
       run: |
@@ -119,7 +125,7 @@ jobs:
           printf("sizeof(Mat) = %d\n", i);
           return 0;
         }' > test.c
-        gcc test.c -L../opencvsharp/build -lOpenCvSharpExtern -o test
+        gcc test.c -L../opencvsharp/build/OpenCvSharpExtern -lOpenCvSharpExtern -o test
 
     - name: Run Test
       run: |
