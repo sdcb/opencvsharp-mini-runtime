@@ -39,7 +39,7 @@ jobs:
     - name: Configure OpenCV
       run: |
         cd opencv && mkdir build && cd build && \
-        cmake3 \
+        cmake \
           -D CMAKE_BUILD_TYPE=RELEASE \
           -D OPENCV_EXTRA_MODULES_PATH=/opencv_contrib/modules \
           -D BUILD_SHARED_LIBS=OFF \
