@@ -26,7 +26,6 @@ jobs:
         repository: opencv/opencv
         ref: ${{ env.OPENCV_VERSION }}
         path: opencv
-        fetch-depth: 1
 
     - name: Checkout OpenCV Contrib repo
       uses: actions/checkout@v4
@@ -34,7 +33,6 @@ jobs:
         repository: opencv/opencv_contrib
         ref: ${{ env.OPENCV_VERSION }}
         path: opencv_contrib
-        fetch-depth: 1
 
     - name: Configure OpenCV
       run: |
@@ -78,7 +76,6 @@ jobs:
         repository: shimat/opencvsharp
         ref: ${{ env.OPENCVSHARP_VERSION }}
         path: opencvsharp
-        fetch-depth: 1
 
     - name: Apply Patches
       run: |
