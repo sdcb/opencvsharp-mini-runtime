@@ -79,7 +79,7 @@ jobs:
 
     - name: Apply Patches
       run: |
-        cd opecvsharp
+        cd opencvsharp
 
         echo "::group::Patching include_opencv.h"
         sed -i '42s/.*/ /;44,70s/.*/ /' ./src/OpenCvSharpExtern/include_opencv.h
