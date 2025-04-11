@@ -79,19 +79,21 @@ jobs:
 
     - name: Apply Patches
       run: |
+        cd opecvsharp
+
         echo "::group::Patching include_opencv.h"
-        sed -i '42s/.*/ /;44,70s/.*/ /' ./opencvsharp/src/OpenCvSharpExtern/include_opencv.h
-        cat ./opencvsharp/src/OpenCvSharpExtern/include_opencv.h
+        sed -i '42s/.*/ /;44,70s/.*/ /' ./src/OpenCvSharpExtern/include_opencv.h
+        cat ./src/OpenCvSharpExtern/include_opencv.h
         echo "::endgroup::"
   
         echo "::group::Patching std_vector.h"
-        sed -i '451,585s/.*/ /' ./opencvsharp/src/OpenCvSharpExtern/std_vector.h
-        cat ./opencvsharp/src/OpenCvSharpExtern/std_vector.h
+        sed -i '451,585s/.*/ /' ./src/OpenCvSharpExtern/std_vector.h
+        cat ./src/OpenCvSharpExtern/std_vector.h
         echo "::endgroup::"
   
         echo "::group::Patching CMakeLists.txt"
-        sed -i '12s/.*/file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)/' ./opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
-        cat ./opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
+        sed -i '12s/.*/file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)/' ./src/OpenCvSharpExtern/CMakeLists.txt
+        cat ./src/OpenCvSharpExtern/CMakeLists.txt
         echo "::endgroup::"
 
     - name: Configure OpenCvSharp
