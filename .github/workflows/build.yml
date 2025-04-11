@@ -132,7 +132,7 @@ jobs:
     - name: Make artifacts
       run: |
         mkdir artifacts && cd artifacts && mkdir lib test
-        cp -r ../opencvsharp/build/OpenCvSharpExtern/* ./lib
+        cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.so ./lib
         cp -r ../test/* ./test
         ls -lR
 
