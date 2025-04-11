@@ -134,11 +134,9 @@ jobs:
 
     - name: Make artifacts
       run: |
-        mkdir artifacts && cd artifacts && \
-        cp -r ../opencv/build/lib/* . && \
-        cp -r ../opencvsharp/build/lib/* . && \
-        cp -r ../opencvsharp/build/bin/* . && \
-        cp -r ../opencvsharp/build/include/* . && \
+        mkdir artifacts && cd artifacts && mkdir lib test
+        cp -r ../opencvsharp/build/OpenCvSharpExtern/* ./lib
+        cp -r ../test/* ./test
         ls -lR
 
     - name: Upload Artifacts
