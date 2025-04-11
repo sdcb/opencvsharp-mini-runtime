@@ -12,7 +12,7 @@ env:
 jobs:
   build:
     name: Build OpenCV
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
 
     steps:
     - name: Install Dependencies
@@ -129,6 +129,7 @@ jobs:
 
     - name: Run Test
       run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/build/OpenCvSharpExtern:$LD_LIBRARY_PATH
         cd test && ./test
 
     - name: Make artifacts
