@@ -42,6 +42,7 @@ jobs:
         cmake \
           -D CMAKE_BUILD_TYPE=RELEASE \
           -D OPENCV_EXTRA_MODULES_PATH=${{ github.workspace }}/opencv_contrib/modules \
+          -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencv/build/install" \
           -D BUILD_SHARED_LIBS=OFF \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
