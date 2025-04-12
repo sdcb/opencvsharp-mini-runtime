@@ -24,7 +24,7 @@ jobs:
         RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=${{ github.ref_name }} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
         echo "Latest opencvsharp run ID: $RUN_ID"
         echo "Downloading artifact 'opencvsharp' from run ${RUN_ID}"
-        gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64 --dir opencvsharp
+        gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64-${{ matrix.os }} --dir opencvsharp
         ls -lR opencvsharp
 
     - name: Create test.c
