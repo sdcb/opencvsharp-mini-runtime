@@ -31,7 +31,7 @@ jobs:
         echo "Latest opencv run ID: $RUN_ID"  
           
         echo "Downloading artifact 'opencv' from run ${RUN_ID}"  
-        gh run download -R ${{ github.repository }} $RUN_ID --name opencv-linux-x64 --dir opencv  
+        gh run download -R ${{ github.repository }} $RUN_ID --name opencv-linux-x64-${{ matrix.os }} --dir opencv  
         ls -lR opencv
 
     - name: Checkout OpenCvSharp
