@@ -13,9 +13,12 @@ env:
 jobs:
   build:
     name: Build All
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Install Dependencies
       run: |
         echo "Installing dependencies..."
@@ -27,7 +30,6 @@ jobs:
         repository: opencv/opencv
         ref: ${{ env.OPENCV_VERSION }}
         path: opencv
-        fetch-depth: 1
 
     - name: Checkout OpenCV Contrib repo
       uses: actions/checkout@v4
@@ -35,7 +37,6 @@ jobs:
         repository: opencv/opencv_contrib
         ref: ${{ env.OPENCV_VERSION }}
         path: opencv_contrib
-        fetch-depth: 1
 
     - name: Configure OpenCV
       run: |
@@ -79,24 +80,11 @@ jobs:
         repository: shimat/opencvsharp
         ref: ${{ env.OPENCVSHARP_VERSION }}
         path: opencvsharp
-        fetch-depth: 1
 
     - name: Apply Patches
       run: |
-        echo "::group::Patching include_opencv.h"
-        sed -i '42s/.*/ /;44,70s/.*/ /' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/include_opencv.h
-        cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/include_opencv.h
-        echo "::endgroup::"
-  
-        echo "::group::Patching std_vector.h"
-        sed -i '451,585s/.*/ /' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/std_vector.h
-        cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/std_vector.h
-        echo "::endgroup::"
-  
-        echo "::group::Patching CMakeLists.txt"
-        sed -i '12s/.*/file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)/' ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
-        cat ${{ github.workspace }}/opencvsharp/src/OpenCvSharpExtern/CMakeLists.txt
-        echo "::endgroup::"
+        cd opencvsharp
+        git apply ../eng/opencvsharp.patch
 
     - name: Configure OpenCvSharp
       run: |
@@ -130,15 +118,14 @@ jobs:
 
     - name: Run Test
       run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/build/OpenCvSharpExtern:$LD_LIBRARY_PATH
         cd test && ./test
 
     - name: Make artifacts
       run: |
-        mkdir artifacts && cd artifacts && \
-        cp -r ../opencv/build/lib/* . && \
-        cp -r ../opencvsharp/build/lib/* . && \
-        cp -r ../opencvsharp/build/bin/* . && \
-        cp -r ../opencvsharp/build/include/* . && \
+        mkdir artifacts && cd artifacts && mkdir lib test
+        cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.so ./lib
+        cp -r ../test/* ./test
         ls -lR
 
     - name: Upload Artifacts
