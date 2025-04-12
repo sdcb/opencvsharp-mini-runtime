@@ -16,8 +16,8 @@ jobs:
       env:  
         GH_TOKEN: ${{ github.token }}  
       run: |
-        echo "Fetching lastest run of opencvsharp.yml on branch ${GITHUB_REF_NAME}"
-        RUN_ID=$(gh run list --workflow=opencvsharp.yml --branch=${GITHUB_REF_NAME} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
+        echo "Fetching lastest run of opencvsharp.yml on branch ${{ github.ref_name }}"
+        RUN_ID=$(gh run list --workflow=opencvsharp.yml --branch=${{ github.ref_name }}" --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
         echo "Latest opencvsharp run ID: $RUN_ID"
         echo "Downloading artifact 'opencvsharp' from run ${RUN_ID}"
         gh run download $RUN_ID --name opencvsharp-linux-x64 --dir opencvsharp
