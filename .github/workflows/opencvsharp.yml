@@ -12,7 +12,11 @@ env:
 jobs:
   build:
     name: Build OpenCvSharp
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
 
     steps:
     - name: Checkout
@@ -69,5 +73,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: opencvsharp-linux-x64
+        name: opencvsharp-linux-x64-${{ matrix.os }}
         path: artifacts
