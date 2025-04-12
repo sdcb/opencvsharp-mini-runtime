@@ -1,0 +1,57 @@
+name: Test-OpenCvSharp
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ '.github/workflows/test-opencvsharp.yml' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Test OpenCvSharp
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download OpenCvSharp Artifacts
+      env:  
+        GH_TOKEN: ${{ github.token }}  
+      run: |
+        echo "Fetching lastest run of opencvsharp.yml on branch ${GITHUB_REF_NAME}"
+        RUN_ID=$(gh run list --workflow=opencvsharp.yml --branch=${GITHUB_REF_NAME} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
+        echo "Latest opencvsharp run ID: $RUN_ID"
+        echo "Downloading artifact 'opencvsharp' from run ${RUN_ID}"
+        gh run download $RUN_ID --name opencvsharp-linux-x64 --dir opencvsharp
+        ls -lR opencvsharp
+
+    - name: Create test.c
+      run: |
+        mkdir test && cd test && echo '#include <stdio.h>
+        int core_Mat_sizeof();
+        int main()
+        {
+          int i = core_Mat_sizeof();
+          printf("sizeof(Mat) = %d\n", i);
+          return 0;
+        }' > test.c
+
+    - name: Build Test
+      run: |
+        cd test
+        gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test
+
+    - name: Run Test
+      run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
+        cd test && ./test
+
+    - name: Make artifacts
+      run: |
+        mkdir artifacts && cd artifacts
+        cp -r ../test/* .
+        ls -lR
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-linux-x64
+        path: artifacts
