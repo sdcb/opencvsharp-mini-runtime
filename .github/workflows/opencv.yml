@@ -70,11 +70,12 @@ jobs:
 
     - name: Show Build Artifacts
       run: |
-        cd opencv/build && ls -lR | grep -iE 'libopencv|opencv_.*\.so|opencv_.*\.dll|opencv_.*\.a|opencv_.*\.dylib'
+        cd opencv/build && ls -lR && pwd
 
     - name: Make artifacts
       run: |
         mkdir artifacts && cd artifacts
+        pwd
         cp ../opencv/build/libopencv*.a .
 
     - name: Upload Artifacts
