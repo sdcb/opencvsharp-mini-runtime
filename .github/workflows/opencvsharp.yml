@@ -1,4 +1,4 @@
-name: Build
+name: Build-OpenCvSharp
 
 on:
   push:
@@ -19,6 +19,8 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Download OpenCV Artifacts
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         echo "Fetching latest run of opencv.yml on branch ${GITHUB_REF_NAME}"
         RUN_ID=$(gh run list --workflow=opencv.yml --branch=${GITHUB_REF_NAME} --status=success --limit=1 --json id | jq -r '.[0].id')
