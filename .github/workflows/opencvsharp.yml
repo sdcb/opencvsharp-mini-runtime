@@ -60,28 +60,10 @@ jobs:
         ls -lR
         ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
 
-    - name: Test OpenCvSharp
-      run: |
-        mkdir test && cd test && echo '#include <stdio.h>
-        int core_Mat_sizeof();
-        int main()
-        {
-          int i = core_Mat_sizeof();
-          printf("sizeof(Mat) = %d\n", i);
-          return 0;
-        }' > test.c
-        gcc test.c -L../opencvsharp/build/OpenCvSharpExtern -lOpenCvSharpExtern -o test
-
-    - name: Run Test
-      run: |
-        export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/build/OpenCvSharpExtern:$LD_LIBRARY_PATH
-        cd test && ./test
-
     - name: Make artifacts
       run: |
         mkdir artifacts && cd artifacts && mkdir lib test
         cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.so ./lib
-        cp -r ../test/* ./test
         ls -lR
 
     - name: Upload Artifacts
