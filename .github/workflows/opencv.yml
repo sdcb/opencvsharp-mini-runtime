@@ -75,7 +75,7 @@ jobs:
     - name: Make artifacts
       run: |
         mkdir artifacts && cd artifacts
-        cp ../lib/libopencv*.a .
+        cp ../opencv/build/libopencv*.a .
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
