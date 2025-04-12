@@ -19,17 +19,18 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Download OpenCV Artifacts
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        echo "Fetching latest run of opencv.yml on branch ${GITHUB_REF_NAME}"
-        RUN_ID=$(gh run list --workflow=opencv.yml --branch=${GITHUB_REF_NAME} --status=success --limit=1 --json id | jq -r '.[0].id')
-        echo "Latest opencv run ID: $RUN_ID"
-        
-        echo "Downloading artifact 'opencv' from run ${RUN_ID}"
-        gh run download $RUN_ID --name opencv-linux-x64 --dir artifacts
-
+      env:  
+        GH_TOKEN: ${{ github.token }}  
+      run: |  
+        echo "Fetching latest run of opencv.yml on branch ${GITHUB_REF_NAME}"  
+        RUN_ID=$(gh run list --workflow=opencv.yml --branch=${GITHUB_REF_NAME} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')  
+        echo "Latest opencv run ID: $RUN_ID"  
+          
+        echo "Downloading artifact 'opencv-linux-x64' from run ${RUN_ID}"  
+        gh run download $RUN_ID --name opencv-linux-x64 --dir artifacts  
+          
         ls -lR artifacts
+    
 
     # - name: Checkout OpenCvSharp
     #   uses: actions/checkout@v4
