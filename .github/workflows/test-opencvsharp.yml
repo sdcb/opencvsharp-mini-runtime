@@ -33,6 +33,7 @@ jobs:
           printf("sizeof(Mat) = %d\n", i);
           return 0;
         }' > test.c
+        cat test.c
 
     - name: Build Test
       run: |
@@ -44,14 +45,8 @@ jobs:
         export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
         cd test && ./test
 
-    - name: Make artifacts
-      run: |
-        mkdir artifacts && cd artifacts
-        cp -r ../test/* .
-        ls -lR
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: test-linux-x64
-        path: artifacts
+        path: test
