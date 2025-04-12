@@ -70,13 +70,12 @@ jobs:
 
     - name: Show Build Artifacts
       run: |
-        cd opencv/build && ls -lR && pwd
+        cd opencv/build && ls -lR
 
     - name: Make artifacts
       run: |
-        mkdir artifacts && cd artifacts
-        pwd
-        cp ../opencv/build/libopencv*.a .
+        mkdir artifacts
+        cp opencv/build/lib/* artifacts
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
