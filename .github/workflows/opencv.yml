@@ -1,0 +1,84 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ '.github/workflows/opencv.yml' ]
+  workflow_dispatch:
+
+env:
+  OPENCV_VERSION: 4.10.0
+
+jobs:
+  build:
+    name: Build OpenCV
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - name: Install Dependencies
+      run: |
+        echo "Installing dependencies..."
+        # Do nothing now
+
+    - name: Checkout OpenCV repo
+      uses: actions/checkout@v4
+      with:
+        repository: opencv/opencv
+        ref: ${{ env.OPENCV_VERSION }}
+        path: opencv
+        fetch-depth: 1
+
+    - name: Checkout OpenCV Contrib repo
+      uses: actions/checkout@v4
+      with:
+        repository: opencv/opencv_contrib
+        ref: ${{ env.OPENCV_VERSION }}
+        path: opencv_contrib
+        fetch-depth: 1
+
+    - name: Configure OpenCV
+      run: |
+        cd opencv && mkdir build && cd build && \
+        cmake \
+          -D CMAKE_BUILD_TYPE=RELEASE \
+          -D OPENCV_EXTRA_MODULES_PATH=${{ github.workspace }}/opencv_contrib/modules \
+          -D BUILD_SHARED_LIBS=OFF \
+          -D ENABLE_CXX11=ON \
+          -D BUILD_EXAMPLES=OFF \
+          -D BUILD_DOCS=OFF \
+          -D BUILD_PERF_TESTS=OFF \
+          -D BUILD_TESTS=OFF \
+          -D BUILD_JAVA=OFF \
+          -D BUILD_LIST=core,imgproc,imgcodecs \
+          -D BUILD_PNG=ON \
+          -D BUILD_TIFF=ON \
+          -D WITH_GSTREAMER=OFF \
+          -D WITH_ADE=OFF \
+          -D WITH_FFMPEG=OFF \
+          -D WITH_V4L=OFF \
+          -D WITH_1394=OFF \
+          -D WITH_GTK=OFF \
+          -D WITH_OPENEXR=OFF \
+          -D WITH_PROTOBUF=OFF \
+          -D WITH_QUIRC=OFF \
+          -D OPENCV_ENABLE_NONFREE=ON \
+          ..
+
+    - name: Build OpenCV
+      run: |
+        cd opencv/build && make -j$(nproc)
+
+    - name: Show Build Artifacts
+      run: |
+        cd opencv/build && ls -lR | grep -iE 'libopencv|opencv_.*\.so|opencv_.*\.dll|opencv_.*\.a|opencv_.*\.dylib'
+
+    - name: Make artifacts
+      run: |
+        mkdir artifacts && cd artifacts
+        cp ../lib/libopencv*.a .
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: opencv-linux-x64
+        path: artifacts

@@ -3,6 +3,7 @@ name: Build
 on:
   push:
     branches: [ main ]
+    paths: [ '.github/workflows/build.yml' ]
   workflow_dispatch:
 
 env:
@@ -11,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: Build OpenCV
+    name: Build All
     runs-on: 'ubuntu-latest'
 
     steps:
