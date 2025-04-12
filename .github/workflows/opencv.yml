@@ -69,6 +69,10 @@ jobs:
       run: |
         cd opencv/build && make -j$(nproc)
 
+    - name: Install OpenCV
+      run: |
+        cd opencv/build && make install
+
     - name: Show Build Artifacts
       run: |
         cd opencv/build && ls -lR
