@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  ubuntu-test:
     name: Test OpenCvSharp
     runs-on: ${{ matrix.os }}
 
@@ -54,3 +54,46 @@ jobs:
       with:
         name: test-linux-x64-${{ matrix.os }}
         path: test
+
+  centos7-test:
+    name: Test OpenCvSharp on CentOS7
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download OpenCvSharp Artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Fetching latest run of opencvsharp.yml on branch ${{ github.ref_name }}"
+          RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=${{ github.ref_name }} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
+          echo "Latest opencvsharp run ID: $RUN_ID"
+          echo "Downloading artifact 'opencvsharp-linux-x64-ubuntu-20.04' from run ${RUN_ID}"
+          gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64-ubuntu-20.04 --dir opencvsharp
+          ls -lR opencvsharp
+
+      - name: Create test.c
+        run: |
+          mkdir -p test && cd test && echo '#include <stdio.h>
+          int core_Mat_sizeof();
+          int main()
+          {
+            int i = core_Mat_sizeof();
+            printf("sizeof(Mat) = %d\n", i);
+            return 0;
+          }' > test.c
+          cat test.c
+
+      - name: Build and Run Test in CentOS7 Docker Container
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/opencvsharp:/opencvsharp \
+            -v ${{ github.workspace }}/test:/test \
+            centos:7 \
+            bash -c "yum install -y gcc && cd /test && gcc test.c -L/opencvsharp/lib -lOpenCvSharpExtern -o test && export LD_LIBRARY_PATH=/opencvsharp/lib && ./test"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-linux-x64-centos7
+          path: test
