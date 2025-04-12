@@ -56,12 +56,10 @@ jobs:
         path: test
 
   centos7-test:
-    name: Test OpenCvSharp on CentOS7
+    name: Test OpenCvSharp on CentOS 7
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Download OpenCvSharp Artifact
+      - name: Download OpenCvSharp Artifacts
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -72,25 +70,38 @@ jobs:
           gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64-ubuntu-20.04 --dir opencvsharp
           ls -lR opencvsharp
 
-      - name: Create test.c
+      - name: Test on CentOS 7 via Docker
         run: |
-          mkdir -p test && cd test && echo '#include <stdio.h>
-          int core_Mat_sizeof();
-          int main()
-          {
-            int i = core_Mat_sizeof();
-            printf("sizeof(Mat) = %d\n", i);
-            return 0;
-          }' > test.c
-          cat test.c
+          docker run --rm -v $PWD:/work -w /work centos:7 /bin/bash -c "
+            set -eux
 
-      - name: Build and Run Test in CentOS7 Docker Container
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}/opencvsharp:/opencvsharp \
-            -v ${{ github.workspace }}/test:/test \
-            centos:7 \
-            bash -c "yum install -y gcc && cd /test && gcc test.c -L/opencvsharp/lib -lOpenCvSharpExtern -o test && export LD_LIBRARY_PATH=/opencvsharp/lib && ./test"
+            # 将 mirrorlist.centos.org 改为 vault.centos.org
+            sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*.repo
+            sed -i 's|^#baseurl=|baseurl=|g'         /etc/yum.repos.d/CentOS-*.repo
+            sed -i 's|mirror.centos.org|vault.centos.org|g' /etc/yum.repos.d/CentOS-*.repo
+
+            # 清理并重新生成缓存
+            yum clean all
+            yum makecache
+
+            # 安装 gcc 或其它需要的包
+            yum install -y gcc
+
+            # 准备测试代码
+            mkdir -p test
+            echo '#include <stdio.h>
+            int core_Mat_sizeof();
+            int main()
+            {
+              int i = core_Mat_sizeof();
+              printf(\"sizeof(Mat) = %d\\n\", i);
+              return 0;
+            }' > test/test.c
+
+            # 编译和运行测试
+            gcc test/test.c -L./opencvsharp/lib -lOpenCvSharpExtern -o test/test
+            LD_LIBRARY_PATH=/work/opencvsharp/lib:\$LD_LIBRARY_PATH ./test/test
+          "
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
