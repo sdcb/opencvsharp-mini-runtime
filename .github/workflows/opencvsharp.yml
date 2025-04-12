@@ -26,68 +26,66 @@ jobs:
         RUN_ID=$(gh run list --workflow=opencv.yml --branch=${GITHUB_REF_NAME} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')  
         echo "Latest opencv run ID: $RUN_ID"  
           
-        echo "Downloading artifact 'opencv-linux-x64' from run ${RUN_ID}"  
-        gh run download $RUN_ID --name opencv-linux-x64 --dir artifacts  
-          
-        ls -lR artifacts
-    
+        echo "Downloading artifact 'opencv' from run ${RUN_ID}"  
+        gh run download $RUN_ID --name opencv-linux-x64 --dir opencv  
+        ls -lR opencv
 
-    # - name: Checkout OpenCvSharp
-    #   uses: actions/checkout@v4
-    #   with: 
-    #     repository: shimat/opencvsharp
-    #     ref: ${{ env.OPENCVSHARP_VERSION }}
-    #     path: opencvsharp
+    - name: Checkout OpenCvSharp
+      uses: actions/checkout@v4
+      with: 
+        repository: shimat/opencvsharp
+        ref: ${{ env.OPENCVSHARP_VERSION }}
+        path: opencvsharp
 
-    # - name: Apply Patches
-    #   run: |
-    #     cd opencvsharp
-    #     git apply ../eng/opencvsharp.patch
+    - name: Apply Patches
+      run: |
+        cd opencvsharp
+        git apply ../eng/opencvsharp.patch
 
-    # - name: Configure OpenCvSharp
-    #   run: |
-    #     cd opencvsharp && mkdir build && cd build && \
-    #     cmake \
-    #       -D CMAKE_INSTALL_PREFIX=${{ github.workspace }}/opencvsharp/build \
-    #       -D OpenCV_DIR=${{ github.workspace }}/opencv/build \
-    #       ../src
+    - name: Configure OpenCvSharp
+      run: |
+        cd opencvsharp && mkdir build && cd build && \
+        cmake \
+          -D CMAKE_INSTALL_PREFIX=${{ github.workspace }}/opencvsharp/build \
+          -D OpenCV_DIR=${{ github.workspace }}/opencv \
+          ../src
 
-    # - name: Build OpenCvSharp
-    #   run: |
-    #     cd opencvsharp/build && make -j$(nproc)
+    - name: Build OpenCvSharp
+      run: |
+        cd opencvsharp/build && make -j$(nproc)
 
-    # - name: Show OpenCvSharp Artifacts
-    #   run: |
-    #     cd opencvsharp/build
-    #     ls -lR
-    #     ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
+    - name: Show OpenCvSharp Artifacts
+      run: |
+        cd opencvsharp/build
+        ls -lR
+        ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
 
-    # - name: Test OpenCvSharp
-    #   run: |
-    #     mkdir test && cd test && echo '#include <stdio.h>
-    #     int core_Mat_sizeof();
-    #     int main()
-    #     {
-    #       int i = core_Mat_sizeof();
-    #       printf("sizeof(Mat) = %d\n", i);
-    #       return 0;
-    #     }' > test.c
-    #     gcc test.c -L../opencvsharp/build/OpenCvSharpExtern -lOpenCvSharpExtern -o test
+    - name: Test OpenCvSharp
+      run: |
+        mkdir test && cd test && echo '#include <stdio.h>
+        int core_Mat_sizeof();
+        int main()
+        {
+          int i = core_Mat_sizeof();
+          printf("sizeof(Mat) = %d\n", i);
+          return 0;
+        }' > test.c
+        gcc test.c -L../opencvsharp/build/OpenCvSharpExtern -lOpenCvSharpExtern -o test
 
-    # - name: Run Test
-    #   run: |
-    #     export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/build/OpenCvSharpExtern:$LD_LIBRARY_PATH
-    #     cd test && ./test
+    - name: Run Test
+      run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/build/OpenCvSharpExtern:$LD_LIBRARY_PATH
+        cd test && ./test
 
-    # - name: Make artifacts
-    #   run: |
-    #     mkdir artifacts && cd artifacts && mkdir lib test
-    #     cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.so ./lib
-    #     cp -r ../test/* ./test
-    #     ls -lR
+    - name: Make artifacts
+      run: |
+        mkdir artifacts && cd artifacts && mkdir lib test
+        cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.so ./lib
+        cp -r ../test/* ./test
+        ls -lR
 
-    # - name: Upload Artifacts
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: opencvsharp-${{ env.OPENCVSHARP_VERSION }}-ubuntu-linux-x64
-    #     path: artifacts
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: opencvsharp-linux-x64
+        path: artifacts
