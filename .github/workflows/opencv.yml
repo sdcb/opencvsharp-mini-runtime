@@ -8,6 +8,30 @@ on:
 
 env:
   OPENCV_VERSION: 4.10.0
+  OPENCV_CMAKE_ARGS: >-
+    -D CMAKE_BUILD_TYPE=RELEASE
+    -D OPENCV_EXTRA_MODULES_PATH=${{ github.workspace }}/opencv_contrib/modules
+    -D CMAKE_INSTALL_PREFIX=${{ github.workspace }}/opencv/build/install
+    -D BUILD_SHARED_LIBS=OFF
+    -D ENABLE_CXX11=ON
+    -D BUILD_EXAMPLES=OFF
+    -D BUILD_DOCS=OFF
+    -D BUILD_PERF_TESTS=OFF
+    -D BUILD_TESTS=OFF
+    -D BUILD_JAVA=OFF
+    -D BUILD_LIST=core,imgproc,imgcodecs
+    -D BUILD_PNG=ON
+    -D BUILD_TIFF=ON
+    -D WITH_GSTREAMER=OFF
+    -D WITH_ADE=OFF
+    -D WITH_FFMPEG=OFF
+    -D WITH_V4L=OFF
+    -D WITH_1394=OFF
+    -D WITH_GTK=OFF
+    -D WITH_OPENEXR=OFF
+    -D WITH_PROTOBUF=OFF
+    -D WITH_QUIRC=OFF
+    -D OPENCV_ENABLE_NONFREE=ON
 
 jobs:
   build:
@@ -16,7 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
 
     steps:
     - name: Install Dependencies
@@ -43,31 +67,7 @@ jobs:
     - name: Configure OpenCV
       run: |
         cd opencv && mkdir build && cd build && \
-        cmake \
-          -D CMAKE_BUILD_TYPE=RELEASE \
-          -D OPENCV_EXTRA_MODULES_PATH=${{ github.workspace }}/opencv_contrib/modules \
-          -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencv/build/install" \
-          -D BUILD_SHARED_LIBS=OFF \
-          -D ENABLE_CXX11=ON \
-          -D BUILD_EXAMPLES=OFF \
-          -D BUILD_DOCS=OFF \
-          -D BUILD_PERF_TESTS=OFF \
-          -D BUILD_TESTS=OFF \
-          -D BUILD_JAVA=OFF \
-          -D BUILD_LIST=core,imgproc,imgcodecs \
-          -D BUILD_PNG=ON \
-          -D BUILD_TIFF=ON \
-          -D WITH_GSTREAMER=OFF \
-          -D WITH_ADE=OFF \
-          -D WITH_FFMPEG=OFF \
-          -D WITH_V4L=OFF \
-          -D WITH_1394=OFF \
-          -D WITH_GTK=OFF \
-          -D WITH_OPENEXR=OFF \
-          -D WITH_PROTOBUF=OFF \
-          -D WITH_QUIRC=OFF \
-          -D OPENCV_ENABLE_NONFREE=ON \
-          ..
+        cmake ${{ env.OPENCV_CMAKE_ARGS }} ..
 
     - name: Build OpenCV
       run: |
