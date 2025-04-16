@@ -12,16 +12,16 @@ env:
     -D CMAKE_BUILD_TYPE=RELEASE
     -D OPENCV_EXTRA_MODULES_PATH=${{ github.workspace }}/opencv_contrib/modules
     -D CMAKE_INSTALL_PREFIX=${{ github.workspace }}/opencv/build/install
-    -D BUILD_SHARED_LIBS=OFF
+    -D BUILD_LIST=core,imgproc,imgcodecs
+    -D BUILD_PNG=ON
+    -D BUILD_TIFF=ON
     -D ENABLE_CXX11=ON
+    -D BUILD_SHARED_LIBS=OFF
     -D BUILD_EXAMPLES=OFF
     -D BUILD_DOCS=OFF
     -D BUILD_PERF_TESTS=OFF
     -D BUILD_TESTS=OFF
     -D BUILD_JAVA=OFF
-    -D BUILD_LIST=core,imgproc,imgcodecs
-    -D BUILD_PNG=ON
-    -D BUILD_TIFF=ON
     -D WITH_GSTREAMER=OFF
     -D WITH_ADE=OFF
     -D WITH_FFMPEG=OFF
@@ -31,7 +31,7 @@ env:
     -D WITH_OPENEXR=OFF
     -D WITH_PROTOBUF=OFF
     -D WITH_QUIRC=OFF
-    -D OPENCV_ENABLE_NONFREE=ON
+    -D OPENCV_ENABLE_NONFREE=OFF
 
 jobs:
   build:
