@@ -80,7 +80,12 @@ jobs:
     - name: Configure OpenCV
       run: |
         cd opencv && mkdir build && cd build
-        cmake ${{ env.OPENCV_CMAKE_ARGS }} ..
+        if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
+          EXTRA_FLAGS="-D ENABLE_SSE=OFF -D ENABLE_SSE2=OFF -D ENABLE_SSE3=OFF -D ENABLE_SSE4_1=OFF"
+        else
+          EXTRA_FLAGS=""
+        fi
+        cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
 
     - name: Build OpenCV
       run: |
