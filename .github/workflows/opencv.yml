@@ -111,5 +111,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: opencv-linux-x64-${{ matrix.os }}
+        name: opencv-${{ matrix.os }}-${{ matrix.arch }}
         path: artifacts
