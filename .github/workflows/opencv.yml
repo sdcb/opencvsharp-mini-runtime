@@ -98,10 +98,12 @@ jobs:
         fi
 
     - name: Show Build Artifacts
+      shell: bash
       run: |
         cd opencv/build && ls -lR
 
     - name: Make artifacts
+      shell: bash
       run: |
         mkdir artifacts
         cp -r opencv/build/install/* artifacts
