@@ -78,6 +78,7 @@ jobs:
         cmake ${{ env.OPENCV_CMAKE_ARGS }} ..
 
     - name: Build OpenCV
+      shell: bash
       run: |
         cd opencv/build
         if [[ ${{ matrix.os }} == win ]]; then
