@@ -80,12 +80,7 @@ jobs:
     - name: Build OpenCV
       shell: bash
       run: |
-        cd opencv/build
-        if [[ ${{ matrix.os }} == win ]]; then
-          make -j %NUMBER_OF_PROCESSORS%
-        else
-          make -j$(nproc)
-        fi
+        cd opencv/build && make -j$(nproc)
 
     - name: Install OpenCV
       run: |
