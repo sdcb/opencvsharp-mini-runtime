@@ -39,11 +39,11 @@ jobs:
 
     strategy:
       matrix:
-      include:
-        - { os: ubuntu.22.04, arch: x64 }
-        - { os: ubuntu.24.04, arch: x64 }
-        - { os: win,          arch: x64 }
-        - { os: osx,          arch: arm64 }
+        include:
+          - { os: ubuntu.22.04, arch: x64 }
+          - { os: ubuntu.24.04, arch: x64 }
+          - { os: win,          arch: x64 }
+          - { os: osx,          arch: arm64 }
 
     steps:
     - name: Install Dependencies
