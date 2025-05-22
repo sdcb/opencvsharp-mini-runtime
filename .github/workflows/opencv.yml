@@ -35,7 +35,12 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ (matrix.os == 'ubuntu.22.04') && 'ubuntu-22.04' || (matrix.os == 'ubuntu.24.04') && 'ubuntu-24.04' || (matrix.os == 'win' && matrix.arch == 'x64') && 'windows-2022' || (matrix.os == 'osx' && matrix.arch == 'arm64') && 'macos-15' }}
+    runs-on: ${{ 
+      (matrix.os == 'ubuntu.22.04') && 'ubuntu-22.04' || 
+      (matrix.os == 'ubuntu.24.04') && 'ubuntu-24.04' || 
+      (matrix.os == 'win' && matrix.arch == 'x64') && 'windows-2022' || 
+      (matrix.os == 'osx' && matrix.arch == 'arm64') && 'macos-15' 
+      }}
 
     strategy:
       matrix:
