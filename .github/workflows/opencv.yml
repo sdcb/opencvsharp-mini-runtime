@@ -35,6 +35,10 @@ env:
 
 jobs:
   build:
+    defaults:
+      run:
+        shell: bash
+
     runs-on: ${{ 
       (matrix.os == 'ubuntu.22.04') && 'ubuntu-22.04' || 
       (matrix.os == 'ubuntu.24.04') && 'ubuntu-24.04' || 
@@ -78,7 +82,6 @@ jobs:
         cmake ${{ env.OPENCV_CMAKE_ARGS }} ..
 
     - name: Build OpenCV
-      shell: bash
       run: |
         cd opencv/build
         if [[ "${{ matrix.os }}" == "win" ]]; then
@@ -88,7 +91,6 @@ jobs:
         fi
 
     - name: Install OpenCV
-      shell: bash
       run: |
         cd opencv/build
         if [[ "${{ matrix.os }}" == "win" ]]; then
@@ -98,12 +100,10 @@ jobs:
         fi
 
     - name: Show Build Artifacts
-      shell: bash
       run: |
         cd opencv/build && ls -lR
 
     - name: Make artifacts
-      shell: bash
       run: |
         mkdir artifacts
         cp -r opencv/build/install/* artifacts
