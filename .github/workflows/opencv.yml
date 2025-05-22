@@ -80,7 +80,12 @@ jobs:
     - name: Build OpenCV
       shell: bash
       run: |
-        cd opencv/build && make -j$(nproc)
+        cd opencv/build
+        if [[ "${{ matrix.os }}" == "win" ]]; then
+          cmake --build . --config Release
+        else
+          make -j$(nproc)
+        fi
 
     - name: Install OpenCV
       run: |
