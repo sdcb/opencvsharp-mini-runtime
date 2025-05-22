@@ -89,7 +89,12 @@ jobs:
 
     - name: Install OpenCV
       run: |
-        cd opencv/build && make install
+        cd opencv/build
+        if [[ "${{ matrix.os }}" == "win" ]]; then
+           cmake --install . --config Release
+        else
+          make install
+        fi
 
     - name: Show Build Artifacts
       run: |
