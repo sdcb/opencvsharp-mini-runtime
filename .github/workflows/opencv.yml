@@ -35,18 +35,20 @@ env:
 
 jobs:
   build:
-    name: Build OpenCV
-
     runs-on: ${{ 
-      contains(matrix.rid, 'ubuntu.22.04') && 'ubuntu-22.04' || 
-      contains(matrix.rid, 'ubuntu.24.04') && 'ubuntu-24.04' || 
-      contains(matrix.rid, 'win-x64') && 'windows-2022' || 
-      contains(matrix.rid, 'osx-arm64') && 'macos-15'
+      (matrix.os == 'ubuntu.22.04') && 'ubuntu-22.04' || 
+      (matrix.os == 'ubuntu.24.04') && 'ubuntu-24.04' || 
+      (matrix.os == 'win' && matrix.arch == 'x64') && 'windows-2022' || 
+      (matrix.os == 'osx' && matrix.arch == 'arm64') && 'macos-15'
     }}
 
     strategy:
       matrix:
-        rid: [ubuntu.22.04-x64, ubuntu.24.04-x64, win-x64, osx-arm64]
+      include:
+        - { os: ubuntu.22.04, arch: x64 }
+        - { os: ubuntu.24.04, arch: x64 }
+        - { os: win,          arch: x64 }
+        - { os: osx,          arch: arm64 }
 
     steps:
     - name: Install Dependencies
@@ -78,7 +80,7 @@ jobs:
     - name: Build OpenCV
       run: |
         cd opencv/build
-        if [[ ${{ matrix.rid }} == win-* ]]; then
+        if [[ ${{ matrix.os }} == win ]]; then
           make -j %NUMBER_OF_PROCESSORS%
         else
           make -j$(nproc)
