@@ -1,0 +1,68 @@
+name: Test-OpenCvSharp on CentOS 7
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ '.github/workflows/test-opencvsharp-centos7.yml' ]
+  workflow_dispatch:
+
+jobs:
+  centos7-test:
+    name: Test OpenCvSharp on CentOS 7
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download OpenCvSharp Artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Fetching latest run of opencvsharp.yml on branch ${{ github.ref_name }}"
+          RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=${{ github.ref_name }} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
+          echo "Latest opencvsharp run ID: $RUN_ID"
+          echo "Downloading artifact 'opencvsharp-linux-x64-ubuntu-20.04' from run ${RUN_ID}"
+          gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64-ubuntu-20.04 --dir opencvsharp
+          ls -lR opencvsharp
+  
+      - name: Pull centos:7 Docker image
+        run: docker pull centos:7
+  
+      - name: Start CentOS 7 container
+        run: docker run -d --name centos7_test -v "$PWD":/work -w /work centos:7 tail -f /dev/null
+  
+      - name: Reconfigure YUM cache
+        run: |
+          docker exec centos7_test bash -c "set -eux; \
+            sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*.repo && \
+            sed -i 's|^#baseurl=|baseurl=|g' /etc/yum.repos.d/CentOS-*.repo && \
+            sed -i 's|mirror.centos.org|vault.centos.org|g' /etc/yum.repos.d/CentOS-*.repo && \
+            yum clean all && \
+            yum makecache"
+  
+      - name: Install gcc dependency
+        run: docker exec centos7_test bash -c "set -eux; yum install -y gcc"
+  
+      - name: Prepare test code
+        run: |
+          mkdir -p test
+          echo '#include <stdio.h>
+          int core_Mat_sizeof();
+          int main()
+          {
+            int i = core_Mat_sizeof();
+            printf("sizeof(Mat) = %d\\n", i);
+            return 0;
+          }' > test/test.c
+  
+      - name: Compile test code
+        run: docker exec centos7_test bash -c "set -eux; gcc test/test.c -L./opencvsharp/lib -lOpenCvSharpExtern -o test/test"
+  
+      - name: Run test
+        run: docker exec centos7_test bash -c "set -eux; LD_LIBRARY_PATH=/work/opencvsharp/lib:\$LD_LIBRARY_PATH ./test/test"
+  
+      - name: Cleanup container
+        run: docker stop centos7_test && docker rm centos7_test
+  
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-linux-x64-centos7
+          path: test

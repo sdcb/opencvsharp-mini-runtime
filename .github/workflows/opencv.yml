@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  OPENCV_VERSION: 4.10.0
+  OPENCV_VERSION: 4.11.0
   OPENCV_CMAKE_ARGS: >-
     -D CMAKE_BUILD_TYPE=RELEASE
     -D OPENCV_EXTRA_MODULES_PATH=${{ github.workspace }}/opencv_contrib/modules
