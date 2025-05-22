@@ -39,20 +39,17 @@ jobs:
       run:
         shell: bash
 
-    runs-on: ${{ 
-      (matrix.os == 'ubuntu.22.04') && 'ubuntu-22.04' || 
-      (matrix.os == 'ubuntu.24.04') && 'ubuntu-24.04' || 
-      (matrix.os == 'win' && matrix.arch == 'x64') && 'windows-2022' || 
-      (matrix.os == 'osx' && matrix.arch == 'arm64') && 'macos-14' 
-      }}
+    runs-on: matrix.runs-on
 
     strategy:
       matrix:
         include:
-          - { os: ubuntu.22.04, arch: x64 }
-          - { os: ubuntu.24.04, arch: x64 }
-          - { os: win,          arch: x64 }
-          - { os: osx,          arch: arm64 }
+          - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04 }
+          - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+          - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
+          - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+          - { os: win,          arch: x64,   runs-on: windows-2022 }
+          - { os: osx,          arch: arm64, runs-on: macos-14 }
 
     steps:
     - name: Install Dependencies
