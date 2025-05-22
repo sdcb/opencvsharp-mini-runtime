@@ -39,7 +39,7 @@ jobs:
       run:
         shell: bash
 
-    runs-on: matrix.runs-on
+    runs-on: ${{ matrix.runs-on }}
 
     strategy:
       matrix:
