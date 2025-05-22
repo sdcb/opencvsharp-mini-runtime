@@ -10,8 +10,8 @@ env:
   OPENCV_VERSION: 4.11.0
   OPENCV_CMAKE_ARGS: >-
     -D CMAKE_BUILD_TYPE=RELEASE
-    -D OPENCV_EXTRA_MODULES_PATH=./opencv_contrib/modules
-    -D CMAKE_INSTALL_PREFIX=./opencv/build/install
+    -D OPENCV_EXTRA_MODULES_PATH="${{ github.workspace }}/opencv_contrib/modules"
+    -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencv/build/install"
     -D BUILD_LIST=core,imgproc,imgcodecs
     -D BUILD_PNG=ON
     -D BUILD_TIFF=ON
