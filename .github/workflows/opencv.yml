@@ -36,9 +36,6 @@ env:
 jobs:
   build:
     name: Build OpenCV
-    strategy:
-      matrix:
-        rid: [ubuntu.22.04-x64, ubuntu.24.04-x64, win-x64, osx-arm64]
 
     runs-on: ${{ 
       contains(matrix.rid, 'ubuntu.22.04') && 'ubuntu-22.04' || 
@@ -46,6 +43,10 @@ jobs:
       contains(matrix.rid, 'win-x64') && 'windows-2022' || 
       contains(matrix.rid, 'osx-arm64') && 'macos-15'
     }}
+
+    strategy:
+      matrix:
+        rid: [ubuntu.22.04-x64, ubuntu.24.04-x64, win-x64, osx-arm64]
 
     steps:
     - name: Install Dependencies
