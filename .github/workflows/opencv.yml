@@ -85,7 +85,7 @@ jobs:
     - name: Build OpenCV
       run: |
         cd opencv/build
-        if [[ "${{ matrix.os }}" == "win" ]]; then
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
           cmake --build . --config Release
         else
           make -j$(nproc)
@@ -94,7 +94,7 @@ jobs:
     - name: Install OpenCV
       run: |
         cd opencv/build
-        if [[ "${{ matrix.os }}" == "win" ]]; then
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
            cmake --install . --config Release
         else
           make install
