@@ -2,8 +2,11 @@ name: Build-OpenCvSharp
 
 on:
   push:
-    branches: [ main ]
-    paths: [ '.github/workflows/opencvsharp.yml' ]
+    branches: 
+      - main
+    paths: 
+      - .github/workflows/opencvsharp.yml
+      - 'eng/opencvsharp.patch'
   workflow_dispatch:
 
 env:
