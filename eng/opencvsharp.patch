@@ -1,8 +1,8 @@
 diff --git a/src/OpenCvSharpExtern/CMakeLists.txt b/src/OpenCvSharpExtern/CMakeLists.txt
-index 4371d2f6..dbe2264f 100644
+index 4371d2f6..13eedf05 100644
 --- a/src/OpenCvSharpExtern/CMakeLists.txt
 +++ b/src/OpenCvSharpExtern/CMakeLists.txt
-@@ -1,15 +1,15 @@
+@@ -1,50 +1,50 @@
 -cmake_minimum_required(VERSION 3.0)
 +cmake_minimum_required(VERSION 3.10)
  
@@ -21,18 +21,16 @@ index 4371d2f6..dbe2264f 100644
  
  find_package(OpenCV REQUIRED)
  
-@@ -17,34 +17,34 @@ find_package(OpenCV REQUIRED)
- if(CMAKE_VERSION VERSION_GREATER "3.11")
-   find_package(Iconv QUIET)
-   if(Iconv_FOUND)
+-# iconv support isn't automatic on some systems
+-if(CMAKE_VERSION VERSION_GREATER "3.11")
+-  find_package(Iconv QUIET)
+-  if(Iconv_FOUND)
 -    ocv_target_link_libraries(${the_module} Iconv::Iconv)
-+    target_link_libraries(${the_module} Iconv::Iconv)
-   else()
+-  else()
 -    ocv_target_compile_definitions(${the_module} PRIVATE "NO_ICONV=1")
-+    target_compile_definitions(${the_module} PRIVATE "NO_ICONV=1")
-   endif()
- endif()
- 
+-  endif()
+-endif()
+-
  if(OpenCV_FOUND)
 -	include_directories(${OpenCV_INCLUDE_DIRS})
 -	#set(LIBS ${LIBS} ${OpenCV_LIBRARIES})
@@ -69,6 +67,16 @@ index 4371d2f6..dbe2264f 100644
 +    else()
 +        add_library(OpenCvSharpExtern SHARED ${OPENCVSHARP_FILES})
 +        target_link_libraries(OpenCvSharpExtern ${OpenCV_LIBRARIES})
++    endif()
++
++    # iconv support isn't automatic on some systems
++    if(CMAKE_VERSION VERSION_GREATER "3.11")
++      find_package(Iconv QUIET)
++      if(Iconv_FOUND)
++        target_link_libraries(OpenCvSharpExtern Iconv::Iconv)
++      else()
++        target_compile_definitions(OpenCvSharpExtern PRIVATE "NO_ICONV=1")
++      endif()
 +    endif()
 +
 +    install(TARGETS OpenCvSharpExtern
