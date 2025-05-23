@@ -81,7 +81,8 @@ jobs:
       run: |
         cd opencv && mkdir build && cd build
         if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
-          EXTRA_FLAGS="-DCV_ENABLE_INTRINSICS=OFF -DENABLE_SSE=OFF -DENABLE_SSE2=OFF -DENABLE_SSE3=OFF -DENABLE_SSE41=OFF -DENABLE_SSE42=OFF -DENABLE_SSSE3=OFF -A ARM64"
+          EXTRA_FLAGS="-DCV_ENABLE_INTRINSICS=OFF -DENABLE_SSE=OFF -DENABLE_SSE2=OFF -DENABLE_SSE3=OFF -DENABLE_SSE41=OFF -DENABLE_SSE42=OFF -DENABLE_SSSE3=OFF"
+          EXTRA_FLAGS+=" -A ARM64 -DCMAKE_SYSTEM_PROCESSOR=aarch64"
         else
           EXTRA_FLAGS=""
         fi
