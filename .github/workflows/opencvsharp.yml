@@ -29,7 +29,7 @@ jobs:
           - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
           - { os: win,          arch: x64,   runs-on: windows-2022 }
           - { os: win11,        arch: x64,   runs-on: windows-2025 }
-          # - { os: win,          arch: arm64, runs-on: windows-11-arm }
+          - { os: win,          arch: arm64, runs-on: windows-11-arm }
           - { os: osx,          arch: x64,   runs-on: macos-13 }
           - { os: osx,          arch: arm64, runs-on: macos-14 }
           - { os: osx.15,       arch: arm64, runs-on: macos-15 }
@@ -65,19 +65,10 @@ jobs:
         cd opencvsharp
         git apply --ignore-whitespace ../eng/opencvsharp.patch
 
-    - name: MSVC Environment(Windows Only)
-      if: startsWith(matrix.os, 'win')
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: ${{ matrix.arch }}
-        # it's a long story, ARM64 have to use ilammy/msvc-dev-cmd@v1, but must be a invalid version 14.29
-        toolset: ${{ matrix.arch == 'x64' && '14.43' || '14.29' }}
-
     - name: Configure OpenCvSharp
       run: |
         cd opencvsharp && mkdir build && cd build
 
-        EXTRA_FLAGS=""
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
           OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc17/staticlib"
         else
@@ -87,7 +78,6 @@ jobs:
         cmake \
           -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencvsharp/build" \
           -D OpenCV_DIR="$OpenCV_DIR" \
-          $EXTRA_FLAGS \
           ../src
 
     - name: Build OpenCvSharp
@@ -116,7 +106,11 @@ jobs:
     - name: Make artifacts
       run: |
         mkdir artifacts && cd artifacts && mkdir lib test
-        cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.* ./lib
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+          cp -r ../opencvsharp/build/OpenCvSharpExtern/Release/OpenCvSharpExtern.* ./lib
+        else
+          cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.* ./lib
+        fi
         ls -lR
 
     - name: Upload Artifacts
