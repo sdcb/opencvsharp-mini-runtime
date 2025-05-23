@@ -87,7 +87,7 @@ jobs:
         if [[ "${{ matrix.os }}" == "win" ]]; then
           EXTRA_FLAGS="-GNinja"
         fi
-        
+
         cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
 
     - name: Build OpenCV
@@ -103,7 +103,7 @@ jobs:
       run: |
         cd opencv/build
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
-           cmake --install .
+           cmake --install . --config Release
         else
           make install
         fi
