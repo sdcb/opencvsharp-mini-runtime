@@ -85,9 +85,6 @@ jobs:
         EXTRA_FLAGS=""
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
           EXTRA_FLAGS="-GNinja"
-          if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-            EXTRA_FLAGS+=" -A ARM64"
-          fi
         fi
 
         cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
