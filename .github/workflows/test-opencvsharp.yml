@@ -18,9 +18,9 @@ jobs:
           - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
           - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
           - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-          # - { os: win,          arch: x64,   runs-on: windows-2022 }
-          # - { os: win11,        arch: x64,   runs-on: windows-2025 }
-          # - { os: win,          arch: arm64, runs-on: windows-11-arm }
+          - { os: win,          arch: x64,   runs-on: windows-2022 }
+          - { os: win11,        arch: x64,   runs-on: windows-2025 }
+          - { os: win,          arch: arm64, runs-on: windows-11-arm }
           - { os: osx,          arch: x64,   runs-on: macos-13 }
           - { os: osx,          arch: arm64, runs-on: macos-14 }
           - { os: osx.15,       arch: arm64, runs-on: macos-15 }
@@ -33,7 +33,7 @@ jobs:
         echo "Fetching lastest run of opencvsharp.yml on branch ${{ github.ref_name }}"
         RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=${{ github.ref_name }} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
         echo "Latest opencvsharp run ID: $RUN_ID"
-        echo "Downloading artifact 'opencvsharp' from run ${RUN_ID}"
+        echo "Downloading artifact 'opencvsharp-${{ matrix.os }}-${{ matrix.arch }}' from run ${RUN_ID}"
         gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-${{ matrix.os }}-${{ matrix.arch }} --dir opencvsharp
 
         echo "::group::OpenCvSharp Artifacts"
@@ -61,6 +61,8 @@ jobs:
       run: |
         if [[ "${{ matrix.os }}" == osx* ]]; then
           export DYLD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$DYLD_LIBRARY_PATH
+        elif [[ "${{ matrix.os }}" == win* ]]; then
+          export PATH=${{ github.workspace }}/opencvsharp/lib:$PATH
         else
           export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
         fi
