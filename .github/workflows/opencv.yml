@@ -77,7 +77,7 @@ jobs:
         cd opencv && mkdir build && cd build
         EXTRA_FLAGS=""
         if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
-          EXTRA_FLAGS+=" -A ARM64"
+          EXTRA_FLAGS+=" -DWITH_IPP=OFF -A ARM64"
         fi
         cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
 
