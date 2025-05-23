@@ -77,8 +77,8 @@ jobs:
 
         EXTRA_FLAGS=""
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          EXTRA_FLAGS+=" -DCMAKE_CXX_FLAGS_RELEASE=\"/Gy\""
-          EXTRA_FLAGS+=" -DCMAKE_SHARED_LINKER_FLAGS_RELEASE=\"/OPT:REF /OPT:ICF\""
+          EXTRA_FLAGS+=" -DCMAKE_CXX_FLAGS_RELEASE=/Gy"
+          EXTRA_FLAGS+=" -DCMAKE_SHARED_LINKER_FLAGS_RELEASE=/OPT:REF /OPT:ICF"
         fi
 
         cmake \
