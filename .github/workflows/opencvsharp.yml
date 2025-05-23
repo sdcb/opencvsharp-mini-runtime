@@ -65,15 +65,22 @@ jobs:
         cd opencvsharp
         git apply --ignore-whitespace ../eng/opencvsharp.patch
 
+    - name: MSVC Environment(Windows Only)
+      if: startsWith(matrix.os, 'win')
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.arch }}
+        # it's a long story, ARM64 have to use ilammy/msvc-dev-cmd@v1, but must be a invalid version 14.29
+        toolset: ${{ matrix.arch == 'x64' && '14.43' || '14.29' }}
+
     - name: Configure OpenCvSharp
       run: |
         cd opencvsharp && mkdir build && cd build
 
-        # win-x64 -> vc16, win-arm64 -> vc17
-        if [[ "${{ matrix.os }}" =~ ^win && "${{ matrix.arch }}" == "x64" ]]; then
-          OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc16/staticlib"
-        elif [[ "${{ matrix.os }}" =~ ^win && "${{ matrix.arch }}" == "arm64" ]]; then
+        EXTRA_FLAGS=""
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
           OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc17/staticlib"
+          EXTRA_FLAGS="-GNinja"
         else
           OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
         fi
@@ -81,11 +88,18 @@ jobs:
         cmake \
           -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencvsharp/build" \
           -D OpenCV_DIR="$OpenCV_DIR" \
+          $EXTRA_FLAGS \
           ../src
 
     - name: Build OpenCvSharp
       run: |
-        cd opencvsharp/build && make -j$(nproc)
+        cd opencvsharp/build
+
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+          cmake --build . --parallel
+        else
+          make -j$(nproc)
+        fi
 
     - name: Show OpenCvSharp Artifacts
       run: |
