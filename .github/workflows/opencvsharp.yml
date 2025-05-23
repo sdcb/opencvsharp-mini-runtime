@@ -96,7 +96,7 @@ jobs:
 
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
           BIN="OpenCvSharpExtern/Release/OpenCvSharpExtern.dll"
-          llvm-strip -g "$BIN"
+          llvm-objcopy --strip-all "$BIN"
 
         elif [[ "${{ matrix.os }}" =~ ^osx ]]; then
           BIN="OpenCvSharpExtern/libOpenCvSharpExtern.dylib"
