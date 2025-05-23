@@ -90,6 +90,26 @@ jobs:
           make -j$(nproc)
         fi
 
+    - name: Strip OpenCvSharpExtern
+      run: |
+        cd opencvsharp/build
+
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+          BIN="OpenCvSharpExtern/Release/OpenCvSharpExtern.dll"
+          llvm-strip -g "$BIN"
+
+        elif [[ "${{ matrix.os }}" =~ ^osx ]]; then
+          BIN="OpenCvSharpExtern/libOpenCvSharpExtern.dylib"
+          strip -x "$BIN"
+
+        else        # Linux
+          BIN="OpenCvSharpExtern/libOpenCvSharpExtern.so"
+          strip --strip-unneeded "$BIN"
+        fi
+
+        echo "Size after strip:"
+        du -h "$BIN"
+
     - name: Show OpenCvSharp Artifacts
       run: |
         cd opencvsharp/build
