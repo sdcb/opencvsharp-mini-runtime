@@ -80,7 +80,6 @@ jobs:
         EXTRA_FLAGS=""
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
           OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc17/staticlib"
-          EXTRA_FLAGS="-GNinja"
         else
           OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
         fi
