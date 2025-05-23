@@ -60,7 +60,7 @@ jobs:
     - name: Apply Patches
       run: |
         cd opencvsharp
-        git apply ../eng/opencvsharp.patch
+        git apply --ignore-whitespace ../eng/opencvsharp.patch
 
     - name: Configure OpenCvSharp
       run: |
