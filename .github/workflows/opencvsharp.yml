@@ -42,7 +42,10 @@ jobs:
           
         echo "Downloading artifact 'opencv' from run ${RUN_ID}"  
         gh run download -R ${{ github.repository }} $RUN_ID --name opencv-${{ matrix.os }}-${{ matrix.arch }} --dir opencv
+
+        echo "::group::OpenCV Artifacts"
         ls -lR opencv
+        echo "::endgroup::"
 
     - name: Checkout OpenCvSharp
       uses: actions/checkout@v4
@@ -71,8 +74,15 @@ jobs:
     - name: Show OpenCvSharp Artifacts
       run: |
         cd opencvsharp/build
+        echo "::group::OpenCvSharp Artifacts"
         ls -lR
-        ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
+        echo "::endgroup::"
+
+        if [[ ${{ matrix.runs-on }} =~ ^ubuntu ]]; then
+          ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
+        elif [[ ${{ matrix.os }} =~ ^osx ]]; then
+          otool -L OpenCvSharpExtern/libOpenCvSharpExtern.dylib
+        fi
 
     - name: Make artifacts
       run: |
