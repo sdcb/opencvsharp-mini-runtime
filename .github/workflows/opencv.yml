@@ -84,7 +84,7 @@ jobs:
         cd opencv && mkdir build && cd build
 
         EXTRA_FLAGS=""
-        if [[ "${{ matrix.os }}" == "win" ]]; then
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
           EXTRA_FLAGS="-GNinja"
         fi
 
