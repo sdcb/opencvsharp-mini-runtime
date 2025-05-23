@@ -59,7 +59,7 @@ jobs:
       run: |
         cd test
         if [[ "${{ matrix.arch }}" == "arm64" && "${{ matrix.os }}" == win* ]]; then
-          gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe --target=aarch64-w64-mingw32
+          clang --target=aarch64-w64-windows-gnu test.c -o test.exe
         else
           # For x64 architecture
           gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
