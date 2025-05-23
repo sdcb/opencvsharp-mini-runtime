@@ -57,14 +57,14 @@ jobs:
 
     - name: Setup MSVC(Windows ARM64 only)
       uses: ilammy/msvc-dev-cmd@v1
-      if: startsWith(matrix.os, 'win') && matrix.arch == 'arm64'
+      if: startsWith(matrix.os, 'win')
       with:
         arch: ${{ matrix.arch }}
 
     - name: Build Test
       run: |
         cd test
-        if [[ "${{ matrix.arch }}" == "arm64" && "${{ matrix.os }}" == win* ]]; then
+        if [[ "${{ matrix.os }}" == win* ]]; then
           export MSYS2_ARG_CONV_EXCL="*"
           cl /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
         else
@@ -79,7 +79,6 @@ jobs:
           export DYLD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$DYLD_LIBRARY_PATH
         elif [[ "${{ matrix.os }}" == win* ]]; then
           export PATH="$(cygpath -u "${{ github.workspace }}/opencvsharp/lib")":$PATH
-          echo "PATH=$PATH"
         else
           export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
         fi
