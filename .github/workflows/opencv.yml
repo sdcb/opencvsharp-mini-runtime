@@ -86,7 +86,7 @@ jobs:
         if [[ "${{ matrix.os }}" == "win" ]]; then
           EXTRA_FLAGS="-GNinja"
           if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-            EXTRA_FLAGS+="-DCV_ENABLE_INTRINSICS=OFF -DCPU_BASELINE_DISABLE=SSE,SSE2,SSE3,SSSE3,SSE4_1,SSE4_2 -DWITH_IPP=OFF"
+            EXTRA_FLAGS+=" -DCV_ENABLE_INTRINSICS=OFF -DCPU_BASELINE_DISABLE=SSE,SSE2,SSE3,SSSE3,SSE4_1,SSE4_2 -DWITH_IPP=OFF"
           fi
         fi
         cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
