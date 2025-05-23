@@ -58,7 +58,12 @@ jobs:
     - name: Build Test
       run: |
         cd test
-        gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
+        if [[ "${{ matrix.arch }}" == "arm64" && "${{ matrix.os }}" == win* ]]; then
+          gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe --target=aarch64-w64-mingw32
+        else
+          # For x64 architecture
+          gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
+        fi
         ls -lR
 
     - name: Run Test
@@ -77,4 +82,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-${{ matrix.os }}-${{ matrix.arch }}
-        path: test.exe
+        path: test
