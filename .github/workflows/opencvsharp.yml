@@ -96,7 +96,7 @@ jobs:
         cd opencvsharp/build
 
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          cmake --build . --parallel
+          cmake --build . --parallel --config Release
         else
           make -j$(nproc)
         fi
