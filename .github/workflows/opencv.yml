@@ -94,7 +94,7 @@ jobs:
     - name: Build OpenCV
       run: |
         cd opencv/build
-        cmake --build .
+        cmake --build . --parallel
 
     - name: Install OpenCV
       run: |
