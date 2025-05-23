@@ -65,6 +65,7 @@ jobs:
       run: |
         cd test
         if [[ "${{ matrix.arch }}" == "arm64" && "${{ matrix.os }}" == win* ]]; then
+          export MSYS2_ARG_CONV_EXCL="*"
           cl /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
         else
           # For x64 architecture
