@@ -59,7 +59,11 @@ jobs:
 
     - name: Run Test
       run: |
-        export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
+        if [[ "${{ matrix.os }}" == osx* ]]; then
+          export DYLD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$DYLD_LIBRARY_PATH
+        else
+          export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
+        fi
         cd test && ./test
 
     - name: Upload Artifacts
