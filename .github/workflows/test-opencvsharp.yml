@@ -59,6 +59,7 @@ jobs:
       run: |
         cd test
         gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
+        ls -lR
 
     - name: Run Test
       run: |
