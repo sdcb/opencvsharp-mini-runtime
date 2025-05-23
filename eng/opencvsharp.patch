@@ -1,8 +1,8 @@
 diff --git a/src/OpenCvSharpExtern/CMakeLists.txt b/src/OpenCvSharpExtern/CMakeLists.txt
-index 4371d2f6..897927b7 100644
+index 4371d2f6..13eedf05 100644
 --- a/src/OpenCvSharpExtern/CMakeLists.txt
 +++ b/src/OpenCvSharpExtern/CMakeLists.txt
-@@ -1,50 +1,51 @@
+@@ -1,50 +1,50 @@
 -cmake_minimum_required(VERSION 3.0)
 +cmake_minimum_required(VERSION 3.10)
  
@@ -55,9 +55,8 @@ index 4371d2f6..897927b7 100644
 +    #set(LIBS ${LIBS} ${OpenCV_LIBRARIES})
 +
 +    if(CMAKE_GENERATOR MATCHES "Visual Studio")
-+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /Gy")
++        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 +        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-+        set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
 +        
 +        set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib")
 +    endif()
