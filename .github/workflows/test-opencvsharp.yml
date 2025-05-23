@@ -9,11 +9,21 @@ on:
 jobs:
   ubuntu-test:
     name: Test OpenCvSharp
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
 
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
+        include:
+          - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
+          - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+          - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
+          - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+          # - { os: win,          arch: x64,   runs-on: windows-2022 }
+          # - { os: win11,        arch: x64,   runs-on: windows-2025 }
+          # - { os: win,          arch: arm64, runs-on: windows-11-arm }
+          - { os: osx,          arch: x64,   runs-on: macos-13 }
+          - { os: osx,          arch: arm64, runs-on: macos-14 }
+          - { os: osx.15,       arch: arm64, runs-on: macos-15 }
 
     steps:
     - name: Download OpenCvSharp Artifacts
@@ -24,8 +34,11 @@ jobs:
         RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=${{ github.ref_name }} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
         echo "Latest opencvsharp run ID: $RUN_ID"
         echo "Downloading artifact 'opencvsharp' from run ${RUN_ID}"
-        gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64-${{ matrix.os }} --dir opencvsharp
+        gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-${{ matrix.os }}-${{ matrix.arch }} --dir opencvsharp
+
+        echo "::group::OpenCvSharp Artifacts"
         ls -lR opencvsharp
+        echo "::endgroup::"
 
     - name: Create test.c
       run: |
@@ -52,5 +65,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: test-linux-x64-${{ matrix.os }}
+        name: test-${{ matrix.os }}-${{ matrix.arch }}
         path: test
