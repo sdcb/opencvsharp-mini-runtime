@@ -87,7 +87,7 @@ jobs:
     - name: Make artifacts
       run: |
         mkdir artifacts && cd artifacts && mkdir lib test
-        cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.so ./lib
+        cp -r ../opencvsharp/build/OpenCvSharpExtern/libOpenCvSharpExtern.* ./lib
         ls -lR
 
     - name: Upload Artifacts
