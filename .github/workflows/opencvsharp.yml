@@ -69,8 +69,11 @@ jobs:
       run: |
         cd opencvsharp && mkdir build && cd build
 
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+        # win-x64 -> vc16, win-arm64 -> vc17
+        if [[ "${{ matrix.os }}" =~ ^win && "${{ matrix.arch }}" == "x64" ]]; then
           OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc16/staticlib"
+        elif [[ "${{ matrix.os }}" =~ ^win && "${{ matrix.arch }}" == "arm64" ]]; then
+          OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc17/staticlib"
         else
           OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
         fi
