@@ -77,6 +77,8 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: ${{ matrix.arch }}
+        # it's a long story, ARM64 have to use ilammy/msvc-dev-cmd@v1, but must be a invalid version 14.29
+        toolset: ${{ matrix.arch == 'x64' && '14.43' || '14.29' }}
 
     - name: Configure OpenCV
       run: |
@@ -92,20 +94,12 @@ jobs:
     - name: Build OpenCV
       run: |
         cd opencv/build
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          cmake --build . --parallel
-        else
-          make -j$(nproc)
-        fi
+        cmake --build .
 
     - name: Install OpenCV
       run: |
         cd opencv/build
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-           cmake --install .
-        else
-          make install
-        fi
+        cmake --install .
 
     - name: Show Build Artifacts
       run: |
