@@ -55,11 +55,17 @@ jobs:
         }' > test.c
         cat test.c
 
+    - name: Setup MSVC(Windows ARM64 only)
+      uses: ilammy/msvc-dev-cmd@v1
+      if: startsWith(matrix.os, 'win') && matrix.arch == 'arm64'
+      with:
+        arch: ${{ matrix.arch }}
+
     - name: Build Test
       run: |
         cd test
         if [[ "${{ matrix.arch }}" == "arm64" && "${{ matrix.os }}" == win* ]]; then
-          clang --target=aarch64-w64-windows-gnu test.c -o test.exe
+          cl /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
         else
           # For x64 architecture
           gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
