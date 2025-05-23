@@ -73,11 +73,10 @@ jobs:
         fetch-depth: 1
 
     - name: MSVC Environment(Windows Only)
-      if: startsWith(matrix.os, 'win') && startsWith(matrix.arch, 'x64')
+      if: startsWith(matrix.os, 'win') && matrix.arch == 'x64'
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: ${{ matrix.arch }}
-        toolset: 14.43
 
     - name: Configure OpenCV
       run: |
