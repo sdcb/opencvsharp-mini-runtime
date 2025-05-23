@@ -94,12 +94,20 @@ jobs:
     - name: Build OpenCV
       run: |
         cd opencv/build
-        cmake --build . --parallel
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+          cmake --build . --parallel
+        else
+          make -j$(nproc)
+        fi
 
     - name: Install OpenCV
       run: |
         cd opencv/build
-        cmake --install .
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+           cmake --install .
+        else
+          make install
+        fi
 
     - name: Show Build Artifacts
       run: |
