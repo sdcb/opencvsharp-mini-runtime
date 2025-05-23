@@ -1,0 +1,177 @@
+name: Make-NuGet
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ '.github/workflows/make-nuget.yml' ]
+  workflow_dispatch:
+
+env:
+  # NuGet 版本号只在这里改一次即可
+  NUGET_VERSION: 4.11.0.20250507
+
+jobs:
+  make-nuget:
+    name: Make NuGet (OpenCvSharp mini-runtime)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      matrix:
+        include:
+          - { os: linux,        arch: x64 }
+          - { os: ubuntu.24.04, arch: x64 }
+          - { os: linux,        arch: arm64 }
+          - { os: ubuntu.24.04, arch: arm64 }
+          - { os: win,          arch: x64 }
+          - { os: win11,        arch: x64 }
+          - { os: win,          arch: arm64 }
+          - { os: osx,          arch: x64 }
+          - { os: osx,          arch: arm64 }
+          - { os: osx.15,       arch: arm64 }
+
+    steps:
+    # ------------------------------------------------------------
+    # 1. 取上一次 opencvsharp.yml 成功运行的产物
+    # ------------------------------------------------------------
+    - name: Download OpenCvSharp Artifacts
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        echo "Fetching latest successful opencvsharp.yml run of branch ${{ github.ref_name }}"
+        RUN_ID=$(gh run list -R ${{ github.repository }} \
+                  --workflow=opencvsharp.yml \
+                  --branch=${{ github.ref_name }} \
+                  --status=success --limit=1 \
+                  --json databaseId | jq -r '.[0].databaseId')
+        echo "Run id = $RUN_ID"
+
+        ART_NAME="opencvsharp-${{ matrix.os }}-${{ matrix.arch }}"
+        echo "Download artifact ${ART_NAME}"
+        gh run download -R ${{ github.repository }} "$RUN_ID" --name "$ART_NAME" --dir opencvsharp
+
+        echo "::group::Artifact tree"
+        ls -lR opencvsharp
+        echo "::endgroup::"
+
+    # ------------------------------------------------------------
+    # 2. 打包 NuGet
+    # ------------------------------------------------------------
+    - name: Build NuGet package
+      env:
+        VERSION: ${{ env.NUGET_VERSION }}
+      run: |
+        set -euo pipefail
+
+        # ---------- 基本元数据 ----------
+        PKG_ID="Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }}"
+        AUTHOR="sdcb"
+        LICENSE="Apache-2.0"
+        GIT_URL="https://github.com/sdcb/opencvsharp-mini-runtime"
+        TAGS="Sdcb OpenCV OpenCvSharp OpenCvSharp4"
+        YEAR=$(date +%Y)
+
+        # ---------- 动态库名 & rid ----------
+        case "${{ matrix.os }}" in
+          win* )
+            LIB_NAME="OpenCvSharpExtern.dll"
+            RUNTIME_RID="win-${{ matrix.arch }}"
+            ;;
+          osx* )
+            LIB_NAME="libOpenCvSharpExtern.dylib"
+            RUNTIME_RID="osx-${{ matrix.arch }}"
+            ;;
+          * )
+            LIB_NAME="libOpenCvSharpExtern.so"
+            RUNTIME_RID="linux-${{ matrix.arch }}"
+            ;;
+        esac
+
+        LIB_SRC="${{ github.workspace }}/opencvsharp/lib/${LIB_NAME}"
+        if [[ ! -f "$LIB_SRC" ]]; then
+          echo "::error file not found::${LIB_SRC}"
+          exit 1
+        fi
+
+        # ---------- 准备临时工作目录 ----------
+        WORK="$RUNNER_TEMP/pkg"
+        mkdir -p \
+          "$WORK/runtimes/${RUNTIME_RID}/native" \
+          "$WORK/lib/netstandard2.0" \
+          "$WORK/lib/net45" \
+          "$WORK/build/native"
+
+        cp "$LIB_SRC" "$WORK/runtimes/${RUNTIME_RID}/native/"
+        touch "$WORK/lib/netstandard2.0/_._"
+        cp "$WORK/lib/netstandard2.0/_._" "$WORK/lib/net45/_._"
+
+        # ---------- 生成 .props ----------
+        NORMALIZED_NAME="$(echo "${PKG_ID}" | tr '.-' '_' )_Dlls"
+        PROPS_FILE="$WORK/build/native/${PKG_ID}.props"
+        cat > "$PROPS_FILE" <<EOF
+        <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+          <PropertyGroup>
+            <${NORMALIZED_NAME}>\\$(MSBuildThisFileDirectory)..\\..\\runtimes</${NORMALIZED_NAME}>
+          </PropertyGroup>
+          <ItemGroup Condition="\\$(TargetFrameworkVersion.StartsWith('v4')) Or \\$(TargetFramework.StartsWith('net4'))">
+            <Content Include="\\$(${NORMALIZED_NAME})\\${RUNTIME_RID}\\native\\${LIB_NAME}">
+              <Linkdll\\${RUNTIME_RID}\\${LIB_NAME}</Link>
+              <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </Content>
+          </ItemGroup>
+        </Project>
+        EOF
+
+        # ---------- 生成 .nuspec ----------
+        NUSPEC_FILE="$WORK/${PKG_ID}.nuspec"
+        cat > "$NUSPEC_FILE" <<EOF
+        <?xml version="1.0" encoding="utf-8"?>
+        <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+          <metadata>
+            <id>${PKG_ID}</id>
+            <version>${VERSION}</version>
+            <title>${PKG_ID} native bindings</title>
+            <authors>${AUTHOR}</authors>
+            <requireLicenseAcceptance>true</requireLicenseAcceptance>
+            <description>Native binding for ${AUTHOR}.OpenCvSharp4.mini to work on ${RUNTIME_RID}.</description>
+            <summary>Native binding for ${AUTHOR}.OpenCvSharp4.mini to work on ${RUNTIME_RID}.</summary>
+            <copyright>Copyright ${YEAR}</copyright>
+            <license type="expression">${LICENSE}</license>
+            <projectUrl>${GIT_URL}</projectUrl>
+            <repository type="git" url="${GIT_URL}.git" />
+            <tags>${TAGS}</tags>
+            <dependencies />
+            <frameworkAssemblies />
+          </metadata>
+          <files>
+            <!-- 两个 _._ 占位 -->
+            <file src="lib\\netstandard2.0\\_._" target="lib\\netstandard2.0" />
+            <file src="lib\\net45\\_._"          target="lib\\net45" />
+            <!-- 动态库 -->
+            <file src="runtimes\\${RUNTIME_RID}\\native\\${LIB_NAME}" target="runtimes\\${RUNTIME_RID}\\native" />
+            <!-- props -->
+            <file src="build\\native\\${PKG_ID}.props" target="build\\native" />
+          </files>
+        </package>
+        EOF
+
+        # ---------- 打包 ----------
+        pushd "$WORK" >/dev/null
+        dotnet nuget pack "${NUSPEC_FILE}" -OutputDirectory "${{ github.workspace }}/nupkgs"
+        popd >/dev/null
+
+        echo "::group::生成的 nupkg"
+        ls -l "${{ github.workspace }}/nupkgs"
+        echo "::endgroup::"
+
+    # ------------------------------------------------------------
+    # 3. 上传结果
+    # ------------------------------------------------------------
+    - name: Upload nupkg artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-${{ matrix.os }}-${{ matrix.arch }}
+        path: nupkgs/*.nupkg
+        if-no-files-found: error
