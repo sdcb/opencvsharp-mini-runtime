@@ -55,7 +55,7 @@ jobs:
         }' > test.c
         cat test.c
 
-    - name: Setup MSVC(Windows ARM64 only)
+    - name: Setup MSVC(Windows only)
       uses: ilammy/msvc-dev-cmd@v1
       if: startsWith(matrix.os, 'win')
       with:
@@ -66,7 +66,7 @@ jobs:
         cd test
         if [[ "${{ matrix.os }}" == win* ]]; then
           export MSYS2_ARG_CONV_EXCL="*"
-          cl /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
+          cl /nologo /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
         else
           # For x64 architecture
           gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
