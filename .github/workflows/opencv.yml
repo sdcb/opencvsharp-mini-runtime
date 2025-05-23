@@ -77,7 +77,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: ${{ matrix.arch }}
-        toolset: '14.43'
+        toolset: '14.29'
 
     - name: Configure OpenCV
       run: |
