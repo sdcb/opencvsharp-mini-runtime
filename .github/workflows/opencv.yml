@@ -94,7 +94,7 @@ jobs:
       run: |
         cd opencv/build
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          cmake --build .
+          cmake --build . --parallel
         else
           make -j$(nproc)
         fi
