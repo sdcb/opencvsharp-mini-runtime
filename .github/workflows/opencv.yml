@@ -96,7 +96,7 @@ jobs:
       run: |
         cd opencv/build
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          cmake --build . --config Release
+          ninja
         else
           make -j$(nproc)
         fi
@@ -105,7 +105,7 @@ jobs:
       run: |
         cd opencv/build
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
-           cmake --install . --config Release
+           ninja install
         else
           make install
         fi
