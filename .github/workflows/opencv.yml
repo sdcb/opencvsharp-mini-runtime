@@ -77,8 +77,6 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: ${{ matrix.arch }}
-        # it's a long story, ARM64 have to use ilammy/msvc-dev-cmd@v1, but must be a invalid version 14.29
-        toolset: ${{ matrix.arch == 'x64' && '14.43' || '14.29' }}
 
     - name: Configure OpenCV
       run: |
@@ -88,7 +86,7 @@ jobs:
         if [[ "${{ matrix.os }}" =~ ^win ]]; then
           EXTRA_FLAGS="-GNinja"
           if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-            EXTRA_FLAGS+="$EXTRA_FLAGS -A ARM64"
+            EXTRA_FLAGS+=" -A ARM64"
           fi
         fi
 
