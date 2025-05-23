@@ -75,15 +75,9 @@ jobs:
           OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
         fi
 
-        EXTRA_FLAGS=""
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          EXTRA_FLAGS+=' -D CMAKE_SHARED_LINKER_FLAGS_RELEASE="/DEBUG:NONE /INCREMENTAL:NO /OPT:REF /OPT:ICF"'
-        fi
-
         cmake \
           -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencvsharp/build" \
           -D OpenCV_DIR="$OpenCV_DIR" \
-          $EXTRA_FLAGS \
           ../src
 
     - name: Build OpenCvSharp
