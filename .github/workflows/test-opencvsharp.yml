@@ -58,7 +58,7 @@ jobs:
     - name: Build Test
       run: |
         cd test
-        gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test
+        gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
 
     - name: Run Test
       run: |
@@ -69,10 +69,10 @@ jobs:
         else
           export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
         fi
-        cd test && ./test
+        cd test && ./test.exe
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: test-${{ matrix.os }}-${{ matrix.arch }}
-        path: test
+        path: test.exe
