@@ -64,10 +64,17 @@ jobs:
 
     - name: Configure OpenCvSharp
       run: |
-        cd opencvsharp && mkdir build && cd build && \
+        cd opencvsharp && mkdir build && cd build
+
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+          OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}-vc16/staticlib"
+        else
+          OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
+        fi
+
         cmake \
           -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencvsharp/build" \
-          -D OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4" \
+          -D OpenCV_DIR="$OpenCV_DIR" \
           ../src
 
     - name: Build OpenCvSharp
