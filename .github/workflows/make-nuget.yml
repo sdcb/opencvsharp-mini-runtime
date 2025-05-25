@@ -7,7 +7,6 @@ on:
   workflow_dispatch:
 
 env:
-  # NuGet 版本号只在这里改一次即可
   NUGET_VERSION: 4.11.0.20250507
 
 jobs:
@@ -113,9 +112,9 @@ jobs:
         cat > "$PROPS_FILE" <<EOF
         <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
           <PropertyGroup>
-            <${NORMALIZED_NAME}>\\$(MSBuildThisFileDirectory)..\\..\\runtimes</${NORMALIZED_NAME}>
+            <${NORMALIZED_NAME}>\\\$(MSBuildThisFileDirectory)..\\..\\runtimes</${NORMALIZED_NAME}>
           </PropertyGroup>
-          <ItemGroup Condition="\\$(TargetFrameworkVersion.StartsWith('v4')) Or \\$(TargetFramework.StartsWith('net4'))">
+          <ItemGroup Condition="\\\$(TargetFrameworkVersion.StartsWith('v4')) Or \\\$(TargetFramework.StartsWith('net4'))">
             <Content Include="\\$(${NORMALIZED_NAME})\\${RUNTIME_RID}\\native\\${LIB_NAME}">
               <Linkdll\\${RUNTIME_RID}\\${LIB_NAME}</Link>
               <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
