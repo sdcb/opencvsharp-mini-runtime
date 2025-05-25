@@ -107,7 +107,7 @@ jobs:
         cp "$WORK/lib/netstandard2.0/_._" "$WORK/lib/net45/_._"
 
         # ---------- 生成 .props ----------
-        NORMALIZED_NAME="$(echo "${PKG_ID}" | tr '.-' '_' )_Dlls"
+        NORMALIZED_NAME="\$(echo "${PKG_ID}" | tr '.-' '_' )_Dlls"
         PROPS_FILE="$WORK/build/native/${PKG_ID}.props"
         cat > "$PROPS_FILE" <<EOF
         <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -158,7 +158,7 @@ jobs:
 
         # ---------- 打包 ----------
         pushd "$WORK" >/dev/null
-        dotnet nuget pack "${NUSPEC_FILE}" -OutputDirectory "${{ github.workspace }}/nupkgs"
+        nuget pack "${NUSPEC_FILE}" -OutputDirectory "${{ github.workspace }}/nupkgs"
         popd >/dev/null
 
         echo "::group::生成的 nupkg"
