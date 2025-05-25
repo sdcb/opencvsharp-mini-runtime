@@ -177,3 +177,62 @@ jobs:
         name: nuget-${{ matrix.os }}-${{ matrix.arch }}
         path: nupkgs/*.nupkg
         if-no-files-found: error
+
+  test-nuget:
+    name: Test NuGet (OpenCvSharp mini-runtime)
+    needs: make-nuget
+    strategy:
+      matrix:
+        include:
+          - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
+          - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+          - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
+          - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+          - { os: win,          arch: x64,   runs-on: windows-2022 }
+          - { os: win11,        arch: x64,   runs-on: windows-2025 }
+          - { os: win,          arch: arm64, runs-on: windows-11-arm }
+          - { os: osx,          arch: x64,   runs-on: macos-13 }
+          - { os: osx,          arch: arm64, runs-on: macos-14 }
+          - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+    runs-on: ${{ matrix.runs-on }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-${{ matrix.os }}-${{ matrix.arch }}
+          path: ./nupkg
+
+      - name: Create test project
+        run: |
+          dotnet new console -n TestApp
+          cd TestApp
+          # 添加 OpenCvSharp4 官方包
+          dotnet add package OpenCvSharp4
+          # 添加本地刚刚生成的 nuget 包
+          dotnet nuget add source ../nupkg --name local
+          dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source ../nupkg
+
+      - name: Write test code
+        run: |
+          cat > TestApp/Program.cs <<'EOF'
+          using OpenCvSharp;
+          using System;
+          class Program
+          {
+              static void Main()
+              {
+                  using Mat mat = new Mat(rows: 3, cols: 4, type: MatType.CV_8SC4);
+                  Console.WriteLine("OpenCvSharp nuget test good!");
+              }
+          }
+          EOF
+
+      - name: Build and Run
+        run: |
+          cd TestApp
+          dotnet build --configuration Release
+          dotnet run --configuration Release
