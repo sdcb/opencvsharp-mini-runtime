@@ -106,17 +106,20 @@ jobs:
         touch "$WORK/lib/netstandard2.0/_._"
         cp "$WORK/lib/netstandard2.0/_._" "$WORK/lib/net45/_._"
 
-        # ---------- 生成 .props ----------
-        NORMALIZED_NAME="\$(echo "${PKG_ID}" | tr '.-' '_' )_Dlls"
+        # ---------- .props ----------
+        NORMALIZED_NAME="$(echo "${PKG_ID}" | tr '.-' '_' )_Dlls"
         PROPS_FILE="$WORK/build/native/${PKG_ID}.props"
+        
         cat > "$PROPS_FILE" <<EOF
         <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
           <PropertyGroup>
-            <${NORMALIZED_NAME}>\\\$(MSBuildThisFileDirectory)..\\..\\runtimes</${NORMALIZED_NAME}>
+            <${NORMALIZED_NAME}>\$(MSBuildThisFileDirectory)..\\..\\runtimes</${NORMALIZED_NAME}>
           </PropertyGroup>
-          <ItemGroup Condition="\\\$(TargetFrameworkVersion.StartsWith('v4')) Or \\\$(TargetFramework.StartsWith('net4'))">
-            <Content Include="\\$(${NORMALIZED_NAME})\\${RUNTIME_RID}\\native\\${LIB_NAME}">
-              <Linkdll\\${RUNTIME_RID}\\${LIB_NAME}</Link>
+        
+          <!-- only for .NET Framework(v4.* / net4*) -->
+          <ItemGroup Condition="\$(TargetFrameworkVersion.StartsWith('v4')) Or \$(TargetFramework.StartsWith('net4'))">
+            <Content Include="\$(${NORMALIZED_NAME})\\${RUNTIME_RID}\\native\\${LIB_NAME}">
+              <Link>dll\\${RUNTIME_RID}\\${LIB_NAME}</Link>
               <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             </Content>
           </ItemGroup>
