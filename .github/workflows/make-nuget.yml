@@ -7,11 +7,11 @@ on:
   workflow_dispatch:
 
 env:
-  NUGET_VERSION: 4.11.0.20250507
+  NUGET_VERSION_PREFIX: 4.11.0
 
 jobs:
   make-nuget:
-    name: Make NuGet (OpenCvSharp mini-runtime)
+    name: Make NuGet
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -60,7 +60,7 @@ jobs:
     # ------------------------------------------------------------
     - name: Build NuGet package
       env:
-        VERSION: ${{ env.NUGET_VERSION }}
+        VERSION: ${{ env.NUGET_VERSION_PREFIX }}.${{ github.run_number }}
       run: |
         set -euo pipefail
 
