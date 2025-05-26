@@ -100,7 +100,7 @@ jobs:
           "$WORK/runtimes/${RUNTIME_RID}/native" \
           "$WORK/lib/netstandard2.0" \
           "$WORK/lib/net45" \
-          "$WORK/build/native"
+          "$WORK/build/net45"
 
         cp "$LIB_SRC" "$WORK/runtimes/${RUNTIME_RID}/native/"
         touch "$WORK/lib/netstandard2.0/_._"
@@ -108,7 +108,7 @@ jobs:
 
         # ---------- .props ----------
         NORMALIZED_NAME="$(echo "${PKG_ID}" | tr '.-' '_' )_Dlls"
-        PROPS_FILE="$WORK/build/native/${PKG_ID}.props"
+        PROPS_FILE="$WORK/build/net45/${PKG_ID}.props"
         
         cat > "$PROPS_FILE" <<EOF
         <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -116,10 +116,9 @@ jobs:
             <${NORMALIZED_NAME}>\$(MSBuildThisFileDirectory)..\\..\\runtimes</${NORMALIZED_NAME}>
           </PropertyGroup>
         
-          <!-- only for .NET Framework(v4.* / net4*) -->
           <ItemGroup Condition="\$(TargetFrameworkVersion.StartsWith('v4')) Or \$(TargetFramework.StartsWith('net4'))">
             <Content Include="\$(${NORMALIZED_NAME})\\${RUNTIME_RID}\\native\\${LIB_NAME}">
-              <Link>dll\\${RUNTIME_RID}\\${LIB_NAME}</Link>
+              <Link>dll\\${{ matrix.arch }}\\${LIB_NAME}</Link>
               <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             </Content>
           </ItemGroup>
@@ -148,12 +147,9 @@ jobs:
             <frameworkAssemblies />
           </metadata>
           <files>
-            <!-- 两个 _._ 占位 -->
             <file src="lib\\netstandard2.0\\_._" target="lib\\netstandard2.0" />
             <file src="lib\\net45\\_._"          target="lib\\net45" />
-            <!-- 动态库 -->
             <file src="runtimes\\${RUNTIME_RID}\\native\\${LIB_NAME}" target="runtimes\\${RUNTIME_RID}\\native" />
-            <!-- props -->
             <file src="build\\native\\${PKG_ID}.props" target="build\\native" />
           </files>
         </package>
