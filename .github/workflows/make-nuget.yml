@@ -212,7 +212,7 @@ jobs:
           cd TestApp
           # 添加 OpenCvSharp4 官方包
           dotnet add package OpenCvSharp4
-          
+
           # 添加本地刚刚生成的 nuget 包
           dotnet nuget add source ../nupkg --name local
           dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source ../nupkg
@@ -260,8 +260,18 @@ jobs:
 
       - name: Create .NET Framework 4.8 test project
         run: |
-          dotnet new console -n TestAppNetFx -f net48
-          cd TestAppNetFx
+          cd TestApp
+
+          # 手写 SDK 风格 net48 csproj
+          New-Item -Name "TestApp.csproj" -ItemType "file" -Value @"
+          <Project Sdk=""Microsoft.NET.Sdk"">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net48</TargetFramework>
+            </PropertyGroup>
+          </Project>
+          "@
+
           dotnet add package OpenCvSharp4
           dotnet nuget add source ../nupkg --name local
           dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source ../nupkg
@@ -282,10 +292,10 @@ jobs:
       
       - name: Build (.NET Framework 4.8)
         run: |
-          cd TestAppNetFx
+          cd TestApp
           dotnet build --configuration Release
 
       - name: Run (.NET Framework 4.8)
         run: |
-          cd TestAppNetFx
-          ./bin/Release/net48/TestAppNetFx.exe
+          cd TestApp
+          ./bin/Release/net48/TestApp.exe
