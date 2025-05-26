@@ -25,6 +25,7 @@ jobs:
           - { os: linux,        arch: arm64 }
           - { os: ubuntu.24.04, arch: arm64 }
           - { os: win,          arch: x64 }
+          - { os: win,          arch: x86 }
           - { os: win11,        arch: x64 }
           - { os: win,          arch: arm64 }
           - { os: osx,          arch: x64 }
@@ -185,6 +186,7 @@ jobs:
           - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
           - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
           - { os: win,          arch: x64,   runs-on: windows-2022 }
+          - { os: win,          arch: x86,   runs-on: windows-2022 }
           - { os: win11,        arch: x64,   runs-on: windows-2025 }
           - { os: win,          arch: arm64, runs-on: windows-11-arm }
           - { os: osx,          arch: x64,   runs-on: macos-13 }
@@ -231,12 +233,12 @@ jobs:
       - name: Build
         run: |
           cd TestApp
-          dotnet build --configuration Release
+          dotnet build --configuration Release --arch ${{ matrix.arch }}
 
       - name: Run
         run: |
           cd TestApp
-          dotnet run --configuration Release --no-build
+          dotnet run --configuration Release --no-build --arch ${{ matrix.arch }}
 
   test-nuget-netfx:
     name: Test NuGet (.NET Framework 4.8)
@@ -246,6 +248,7 @@ jobs:
       matrix:
         include:
           - { os: win, arch: x64 }
+          - { os: win, arch: x86 }
 
     steps:
       - name: Download NuGet artifact
@@ -291,7 +294,7 @@ jobs:
       - name: Build (.NET Framework 4.8)
         run: |
           cd TestApp
-          dotnet build --configuration Release
+          dotnet build --configuration Release --arch ${{ matrix.arch }}
 
       - name: Show build output
         shell: bash
