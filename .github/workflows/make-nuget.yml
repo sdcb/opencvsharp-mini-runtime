@@ -293,6 +293,12 @@ jobs:
           cd TestApp
           dotnet build --configuration Release
 
+      - name: Show build output
+        shell: bash
+        run: |
+          cd TestApp
+          ls -lR bin/Release/net48
+
       - name: Run (.NET Framework 4.8)
         run: |
           cd TestApp
