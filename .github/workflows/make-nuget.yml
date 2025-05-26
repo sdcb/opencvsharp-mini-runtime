@@ -208,12 +208,10 @@ jobs:
         run: |
           dotnet new console -n TestApp
           cd TestApp
-          # 添加 OpenCvSharp4 官方包
           dotnet add package OpenCvSharp4
 
-          # 添加本地刚刚生成的 nuget 包
           dotnet nuget add source ${{ github.workspace }}/nupkg --name local
-          dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source local
+          dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source ${{ github.workspace }}/nupkg
 
       - name: Write test code
         run: |
