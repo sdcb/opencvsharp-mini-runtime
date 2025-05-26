@@ -236,3 +236,66 @@ jobs:
           cd TestApp
           dotnet build --configuration Release
           dotnet run --configuration Release
+
+  test-nuget-netfx:
+    name: Test NuGet (.NET Framework 4.8)
+    needs: make-nuget
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        include:
+          - { os: win, arch: x64 }
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-${{ matrix.os }}-${{ matrix.arch }}
+          path: ./nupkg
+
+      - name: Create .NET Framework 4.8 test project
+        run: |
+          mkdir TestAppNetFx
+          cd TestAppNetFx
+          # 创建 csproj
+          New-Item -Name "TestAppNetFx.csproj" -ItemType "file" -Value @"
+            <Project Sdk=""Microsoft.NET.Sdk"">
+              <PropertyGroup>
+                <OutputType>Exe</OutputType>
+                <TargetFramework>net48</TargetFramework>
+              </PropertyGroup>
+              <ItemGroup>
+                <PackageReference Include=""OpenCvSharp4"" Version=""*""></PackageReference>
+                <PackageReference Include=""Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }}"" Version=""${{ env.NUGET_VERSION }}"" />
+              </ItemGroup>
+            </Project>
+            "@
+
+          # 写测试代码
+          New-Item -Name "Program.cs" -ItemType "file" -Value @"
+            using OpenCvSharp;
+            using System;
+            class Program
+            {
+                static void Main()
+                {
+                    using Mat mat = new Mat(rows: 3, cols: 4, type: MatType.CV_8SC4);
+                    Console.WriteLine(""OpenCvSharp nuget test good! (.NET Framework)"");
+                }
+            }
+            "@
+
+      - name: Restore NuGet packages
+        run: |
+          cd TestAppNetFx
+          nuget sources add -name local -source ..\nupkg
+          nuget restore TestAppNetFx.csproj -Source ..\nupkg
+
+      - name: Build and Run (.NET Framework 4.8)
+        run: |
+          cd TestAppNetFx
+          msbuild /p:Configuration=Release
+          .\bin\Release\net48\TestAppNetFx.exe
