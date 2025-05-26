@@ -260,7 +260,7 @@ jobs:
 
       - name: Create .NET Framework 4.8 test project
         run: |
-          cd TestApp
+          mkdir TestApp && cd TestApp
 
           # 手写 SDK 风格 net48 csproj
           New-Item -Name "TestApp.csproj" -ItemType "file" -Value @"
