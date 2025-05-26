@@ -28,6 +28,7 @@ jobs:
           - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
           - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
           - { os: win,          arch: x64,   runs-on: windows-2022 }
+          - { os: win,          arch: x86,   runs-on: windows-2022 }
           - { os: win11,        arch: x64,   runs-on: windows-2025 }
           - { os: win,          arch: arm64, runs-on: windows-11-arm }
           - { os: osx,          arch: x64,   runs-on: macos-13 }
@@ -75,9 +76,15 @@ jobs:
           OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
         fi
 
+        EXTRA_FLAGS=""
+        if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
+          EXTRA_FLAGS+=" -A Win32"
+        fi
+
         cmake \
           -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencvsharp/build" \
           -D OpenCV_DIR="$OpenCV_DIR" \
+          $EXTRA_FLAGS \
           ../src
 
     - name: Build OpenCvSharp
