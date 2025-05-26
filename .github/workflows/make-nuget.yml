@@ -210,7 +210,7 @@ jobs:
           cd TestApp
           dotnet add package OpenCvSharp4
 
-          dotnet nuget add source ${{ github.workspace }}/nupkg --name local
+          dotnet nuget add source ../nupkg --name local
           dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source local
 
       - name: Write test code
