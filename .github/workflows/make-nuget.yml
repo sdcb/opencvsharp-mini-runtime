@@ -303,4 +303,4 @@ jobs:
       - name: Run (.NET Framework 4.8)
         run: |
           cd TestApp
-          ./bin/Release/net48/TestApp.exe
+          ./bin/Release/net48/${{ matrix.os }}-${{ matrix.arch }}/TestApp.exe
