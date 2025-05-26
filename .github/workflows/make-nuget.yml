@@ -284,7 +284,9 @@ jobs:
           {
               static void Main()
               {
-                  using Mat mat = new Mat(rows: 3, cols: 4, type: MatType.CV_8SC4);
+                  using (Mat mat = new Mat(rows: 3, cols: 4, type: MatType.CV_8SC4))
+                  {
+                  }
                   Console.WriteLine("OpenCvSharp nuget test good! (.NET Framework)");
               }
           }
