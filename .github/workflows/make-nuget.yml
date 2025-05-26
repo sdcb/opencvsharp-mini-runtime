@@ -150,7 +150,7 @@ jobs:
             <file src="lib\\netstandard2.0\\_._" target="lib\\netstandard2.0" />
             <file src="lib\\net45\\_._"          target="lib\\net45" />
             <file src="runtimes\\${RUNTIME_RID}\\native\\${LIB_NAME}" target="runtimes\\${RUNTIME_RID}\\native" />
-            <file src="build\\net45\\${PKG_ID}.props" target="build\\native" />
+            <file src="build\\net45\\${PKG_ID}.props" target="build\\net45" />
           </files>
         </package>
         EOF
