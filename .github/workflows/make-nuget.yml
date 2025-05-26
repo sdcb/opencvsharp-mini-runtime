@@ -212,8 +212,8 @@ jobs:
           dotnet add package OpenCvSharp4
 
           # 添加本地刚刚生成的 nuget 包
-          dotnet nuget add source ../nupkg --name local
-          dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source ../nupkg
+          dotnet nuget add source ${{ github.workspace }}/nupkg --name local
+          dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source local
 
       - name: Write test code
         run: |
