@@ -76,10 +76,14 @@ jobs:
     - name: Configure OpenCV
       run: |
         cd opencv && mkdir build && cd build
+
         EXTRA_FLAGS=""
         if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
           EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
+        elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
+          EXTRA_FLAGS+=" -A Win32"
         fi
+
         cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
 
     - name: Build OpenCV
