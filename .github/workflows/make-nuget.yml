@@ -176,7 +176,7 @@ jobs:
         if-no-files-found: error
 
   test-nuget:
-    name: Test NuGet (OpenCvSharp mini-runtime)
+    name: Test NuGet
     needs: make-nuget
     strategy:
       matrix:
@@ -218,6 +218,7 @@ jobs:
               <PlatformTarget>${{ matrix.arch }}</PlatformTarget>
             </PropertyGroup>
           </Project>
+          EOF
 
           dotnet add package OpenCvSharp4
           dotnet nuget add source ../nupkg --name local
@@ -249,7 +250,7 @@ jobs:
           dotnet run --configuration Release --no-build
 
   test-nuget-netfx:
-    name: Test NuGet (.NET Framework 4.8)
+    name: Test NuGet (NetFX)
     needs: make-nuget
     runs-on: windows-2022
     strategy:
