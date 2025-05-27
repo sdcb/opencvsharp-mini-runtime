@@ -25,6 +25,7 @@ jobs:
           - { os: linux,        arch: arm64 }
           - { os: ubuntu.24.04, arch: arm64 }
           - { os: win,          arch: x64 }
+          - { os: win,          arch: x86 }
           - { os: win11,        arch: x64 }
           - { os: win,          arch: arm64 }
           - { os: osx,          arch: x64 }
@@ -185,6 +186,7 @@ jobs:
           - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
           - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
           - { os: win,          arch: x64,   runs-on: windows-2022 }
+          - { os: win,          arch: x86,   runs-on: windows-2022 }
           - { os: win11,        arch: x64,   runs-on: windows-2025 }
           - { os: win,          arch: arm64, runs-on: windows-11-arm }
           - { os: osx,          arch: x64,   runs-on: macos-13 }
@@ -204,11 +206,20 @@ jobs:
 
       - name: Create test project
         run: |
-          dotnet new console -n TestApp
-          cd TestApp
-          # 添加 OpenCvSharp4 官方包
+          mkdir TestApp && cd TestApp
+          
+          # 手写 SDK 风格 csproj
+          cat > TestApp.csproj <<'EOF'
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net8.0</TargetFramework>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <PlatformTarget>${{ matrix.arch }}</PlatformTarget>
+            </PropertyGroup>
+          </Project>
+
           dotnet add package OpenCvSharp4
-          # 添加本地刚刚生成的 nuget 包
           dotnet nuget add source ../nupkg --name local
           dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source ../nupkg
 
@@ -230,12 +241,12 @@ jobs:
       - name: Build
         run: |
           cd TestApp
-          dotnet build --configuration Release --arch ${{ matrix.arch }}
+          dotnet build --configuration Release
 
       - name: Run
         run: |
           cd TestApp
-          dotnet run --configuration Release --no-build --arch ${{ matrix.arch }}
+          dotnet run --configuration Release --no-build
 
   test-nuget-netfx:
     name: Test NuGet (.NET Framework 4.8)
