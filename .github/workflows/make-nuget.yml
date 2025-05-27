@@ -211,6 +211,7 @@ jobs:
           # 添加本地刚刚生成的 nuget 包
           dotnet nuget add source ../nupkg --name local
           dotnet add package Sdcb.OpenCvSharp4.mini.runtime.${{ matrix.os }}-${{ matrix.arch }} --source ../nupkg
+
       - name: Write test code
         run: |
           cat > TestApp/Program.cs <<'EOF'
@@ -225,15 +226,16 @@ jobs:
               }
           }
           EOF
+
       - name: Build
         run: |
           cd TestApp
-          dotnet build --configuration Release
+          dotnet build --configuration Release --arch ${{ matrix.arch }}
 
       - name: Run
         run: |
           cd TestApp
-          dotnet run --configuration Release --no-build
+          dotnet run --configuration Release --no-build --arch ${{ matrix.arch }}
 
   test-nuget-netfx:
     name: Test NuGet (.NET Framework 4.8)
@@ -243,6 +245,7 @@ jobs:
       matrix:
         include:
           - { os: win, arch: x64 }
+          - { os: win, arch: x86 }
 
     steps:
       - name: Download NuGet artifact
