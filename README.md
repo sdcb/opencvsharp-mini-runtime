@@ -1,7 +1,25 @@
 # opencvsharp-mini-runtime [![QQ](https://img.shields.io/badge/QQ_Group-579060605-52B6EF?style=social&logo=tencent-qq&logoColor=000&logoWidth=20)](https://jq.qq.com/?_wv=1027&k=K4fBqpyQ)
-mini runtime that suitable for model inference in server, only `core`, `imgproc`, `imgcodec` modules was built.
+[![Build-OpenCV](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/opencv.yml/badge.svg)](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/opencv.yml) [![Build-OpenCvSharp](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/opencvsharp.yml/badge.svg)](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/opencvsharp.yml) [![Test-OpenCvSharp](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/test-opencvsharp.yml/badge.svg)](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/test-opencvsharp.yml) [![Make-NuGet](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/make-nuget.yml/badge.svg)](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/make-nuget.yml)
+
+Mini runtime that suitable for model inference in server, only `core`, `imgproc`, `imgcodec` modules was built.
 
 # Packages
+
+| Id                                                | Version                                                                                                                                                                        | Size    | OS           | Arch  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- | ------------ | ----- |
+| Sdcb.OpenCvSharp4.mini.runtime.linux-arm64        | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.linux-arm64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.linux-arm64)               | 4.00MB  | Linux        | ARM64 |
+| Sdcb.OpenCvSharp4.mini.runtime.linux-x64          | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.linux-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.linux-x64)                   | 17.37MB | Linux        | x64   |
+| Sdcb.OpenCvSharp4.mini.runtime.osx-arm64          | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.osx-arm64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.osx-arm64)                   | 3.68MB  | macOS        | ARM64 |
+| Sdcb.OpenCvSharp4.mini.runtime.osx-x64            | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.osx-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.osx-x64)                       | 16.91MB | macOS        | x64   |
+| Sdcb.OpenCvSharp4.mini.runtime.osx.15-arm64       | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.osx.15-arm64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.osx.15-arm64)             | 3.74MB  | macOS 15     | ARM64 |
+| Sdcb.OpenCvSharp4.mini.runtime.ubuntu.24.04-arm64 | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.ubuntu.24.04-arm64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.ubuntu.24.04-arm64) | 4.58MB  | Ubuntu 24.04 | ARM64 |
+| Sdcb.OpenCvSharp4.mini.runtime.ubuntu.24.04-x64   | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.ubuntu.24.04-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.ubuntu.24.04-x64)     | 18.02MB | Ubuntu 24.04 | x64   |
+| Sdcb.OpenCvSharp4.mini.runtime.win-arm64          | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.win-arm64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.win-arm64)                   | 2.66MB  | Windows      | ARM64 |
+| Sdcb.OpenCvSharp4.mini.runtime.win-x64            | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.win-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.win-x64)                       | 13.80MB | Windows      | x64   |
+| Sdcb.OpenCvSharp4.mini.runtime.win-x86            | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.win-x86.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.win-x86)                       | 7.92MB  | Windows      | x86   |
+| Sdcb.OpenCvSharp4.mini.runtime.win11-x64          | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.win11-x64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.win11-x64)                   | 13.84MB | Windows 11   | x64   |
+
+## Legacy Packages(for OpenCV/OpenCVSharp 4.8)
 | Id                                     | Version | Size      | OS      | Arch |
 | -------------------------------------- | ----- | -------- | ------------ | ----- |
 | Sdcb.OpenCvSharp4.mini.runtime.centos.7-arm64      | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.centos.7-arm64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.centos.7-arm64) | 3.23MB  | CentOS 7     | ARM64 |
@@ -19,5 +37,6 @@ mini runtime that suitable for model inference in server, only `core`, `imgproc`
 | Sdcb.OpenCvSharp4.mini.runtime.linux-loongarch64  | [![NuGet](https://img.shields.io/nuget/v/Sdcb.OpenCvSharp4.mini.runtime.linux-loongarch64.svg)](https://nuget.org/packages/Sdcb.OpenCvSharp4.mini.runtime.linux-loongarch64) | 4.68MB  | Linux/Loongnix | loongarch64 |
 
 # Build docs/instructions
+* [Github Actions](https://github.com/sdcb/opencvsharp-mini-runtime/actions/workflows/make-nuget.yml)
 * [Android](./build-docs/android.md)
 * [Linux-CentOS 7](./build-docs/centos7.md)
