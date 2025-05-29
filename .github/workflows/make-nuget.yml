@@ -9,6 +9,9 @@ on:
 env:
   NUGET_VERSION_PREFIX: 4.11.0
 
+permissions:
+  packages: write
+
 jobs:
   make-nuget:
     name: Make NuGet
@@ -208,7 +211,6 @@ jobs:
         run: |
           mkdir TestApp && cd TestApp
           
-          # 手写 SDK 风格 csproj
           cat > TestApp.csproj <<'EOF'
           <Project Sdk="Microsoft.NET.Sdk">
             <PropertyGroup>
@@ -315,3 +317,38 @@ jobs:
         run: |
           cd TestApp
           ./bin/Release/net48/${{ matrix.os }}-${{ matrix.arch }}/TestApp.exe
+
+  upload-nuget:
+    name: Upload NuGet
+    needs: [make-nuget, test-nuget, test-nuget-netfx]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Download nupkg artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: nupkgs
+
+      - name: List nupkgs
+        run: |
+          echo "::group::nupkgs"
+          ls -lR nupkgs
+          echo "::endgroup::"
+
+      - name: Upload to NuGet
+        run: |
+          set -euo pipefail
+          echo "Uploading to NuGet..."
+          for nupkg in nupkgs/*.nupkg; do
+            echo "Uploading $nupkg"
+            dotnet nuget push "$nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}" --api-key "${{ secrets.GITHUB_TOKEN }}" --skip-duplicate
+          done
+          echo "Upload completed."
+
+      - name: Bundle upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-bundle
+          path: nupkgs/*.nupkg
+          if-no-files-found: error
