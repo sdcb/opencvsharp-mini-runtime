@@ -44,6 +44,7 @@ jobs:
         cat > test/test.c <<'EOF'
         #include <stdio.h>
         #include <stdint.h>
+        #include <stdlib.h>
         #include <assert.h>
 
         /* ==== 简易类型 / 宏定义 ==== */
@@ -158,9 +159,3 @@ jobs:
           export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
         fi
         cd test && ./test.exe
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-${{ matrix.os }}-${{ matrix.arch }}
-        path: test
