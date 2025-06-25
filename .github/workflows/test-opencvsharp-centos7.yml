@@ -20,8 +20,8 @@ jobs:
           echo "Fetching latest run of opencvsharp.yml on branch main"
           RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=main --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
           echo "Latest opencvsharp run ID: $RUN_ID"
-          echo "Downloading artifact 'opencvsharp-linux-x64-ubuntu-20.04' from run ${RUN_ID}"
-          gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64-ubuntu-20.04 --dir opencvsharp
+          echo "Downloading artifact 'opencvsharp-linux-x64' from run ${RUN_ID}"
+          gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64 --dir opencvsharp
           ls -lR opencvsharp
   
       - name: Pull centos:7 Docker image
