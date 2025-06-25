@@ -2,7 +2,9 @@ name: Test-OpenCvSharp on CentOS 7
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - test/glibc
     paths: [ '.github/workflows/test-opencvsharp-centos7.yml' ]
   workflow_dispatch:
 
@@ -15,8 +17,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          echo "Fetching latest run of opencvsharp.yml on branch ${{ github.ref_name }}"
-          RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=${{ github.ref_name }} --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
+          echo "Fetching latest run of opencvsharp.yml on branch main"
+          RUN_ID=$(gh run list -R ${{ github.repository }} --workflow=opencvsharp.yml --branch=main --status=success --limit=1 --json databaseId | jq -r '.[0].databaseId')
           echo "Latest opencvsharp run ID: $RUN_ID"
           echo "Downloading artifact 'opencvsharp-linux-x64-ubuntu-20.04' from run ${RUN_ID}"
           gh run download -R ${{ github.repository }} $RUN_ID --name opencvsharp-linux-x64-ubuntu-20.04 --dir opencvsharp
