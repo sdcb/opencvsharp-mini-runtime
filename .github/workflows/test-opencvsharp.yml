@@ -40,14 +40,70 @@ jobs:
 
     - name: Create test.c
       run: |
-        mkdir test && cd test && echo '#include <stdio.h>
-        int core_Mat_sizeof();
-        int main()
+        mkdir test && cd test
+        cat > test.c << 'EOF'
+        #include <stdio.h>
+        #include <stdint.h>
+    
+        /* ========== OpenCvSharpExtern exported C prototypes ========== */
+        typedef struct Mat Mat;
+        typedef struct { double val[4]; } Scalar;
+        typedef struct { int x; int y; } Point;
+        
+        /* core */
+        int          core_Mat_sizeof(void);
+        Mat*         core_Mat_new2(int rows, int cols, int type);
+        void         core_Mat_delete(Mat* mat);
+        uint8_t*     core_Mat_data(Mat* mat);
+        int          core_Mat_rows(Mat* mat);
+        int          core_Mat_cols(Mat* mat);
+        int          core_Mat_type(Mat* mat);
+        
+        /* imgcodecs */
+        int          imgcodecs_imwrite(const char* fileName, Mat* mat,
+                                       const int* params, int paramsLength);
+        
+        /* ========== Convenience macro (same数值和 OpenCV 保持一致) ========== */
+        #define CV_8U        0
+        #define CV_CN_SHIFT  3
+        #define CV_MAKETYPE(depth, cn) ( (depth) + ( (cn - 1) << CV_CN_SHIFT ) )
+        #define CV_8UC3      CV_MAKETYPE(CV_8U,3)
+        
+        int main(void)
         {
-          int i = core_Mat_sizeof();
-          printf("sizeof(Mat) = %d\n", i);
-          return 0;
-        }' > test.c
+            printf("sizeof(cv::Mat) reported by core_Mat_sizeof = %d bytes\n",
+                   core_Mat_sizeof());
+        
+            /* 1. 创建 100×100×3 uchar 图像 */
+            Mat* img = core_Mat_new2(100, 100, CV_8UC3);
+            if (!img) {
+                fprintf(stderr, "core_Mat_new2 failed\n");
+                return 1;
+            }
+        
+            /* 2. 填充像素：让 B=行, G=列, R=(行+列)/2 */
+            uint8_t* data = core_Mat_data(img);
+            int rows = core_Mat_rows(img);
+            int cols = core_Mat_cols(img);
+            for (int r = 0; r < rows; ++r) {
+                for (int c = 0; c < cols; ++c) {
+                    int idx = (r * cols + c) * 3;
+                    data[idx + 0] = (uint8_t)r;              /* B */
+                    data[idx + 1] = (uint8_t)c;              /* G */
+                    data[idx + 2] = (uint8_t)((r + c) >> 1); /* R */
+                }
+            }
+        
+            /* 3. 写入 PNG 文件 */
+            const char* outName = "test-output.png";
+            int ok = imgcodecs_imwrite(outName, img, NULL, 0);
+            printf("imgcodecs_imwrite(\"%s\") returned %d\n", outName, ok);
+        
+            /* 4. 清理 */
+            core_Mat_delete(img);
+            return ok ? 0 : 1;
+        }
+        EOF
         cat test.c
 
     - name: Setup MSVC(Windows only)
