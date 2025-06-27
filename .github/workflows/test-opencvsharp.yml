@@ -143,9 +143,11 @@ jobs:
     - name: Build Test
       run: |
         cd test
-        if [[ "${{ matrix.os }}" == win* ]]; then
+        if [[ "${{ runner.os }}" == Windows ]]; then
           export MSYS2_ARG_CONV_EXCL="*"
           cl /nologo /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
+        elif [[ "${{ runner.os }}" == macOS ]]; then
+          gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test
         else
           gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe 
         fi
