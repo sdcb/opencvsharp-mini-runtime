@@ -163,6 +163,10 @@ jobs:
         fi
         cd test && ./test.exe
 
+    - name: Copy opencvsharp/lib to test
+      run: |
+        cp -r opencvsharp/lib/* test
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
