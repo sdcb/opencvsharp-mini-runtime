@@ -46,15 +46,93 @@ jobs:
 
     - name: Create test.c
       run: |
-        mkdir test && cd test && echo '#include <stdio.h>
-        int core_Mat_sizeof();
-        int main()
+        mkdir -p test
+        cat > test/test.c <<'EOF'
+        #include <stdio.h>
+        #include <stdint.h>
+        #include <stdlib.h>
+        #include <assert.h>
+
+        /* ==== 简易类型 / 宏定义 ==== */
+        typedef long long uint64;               /* 对应 C# 的 UInt64 */
+        typedef int        ExceptionStatus;     /* OpenCvSharpExtern 约定: 0 = OK */
+        typedef struct { double val[4]; } MyCvScalar;
+        typedef struct cv_Mat cv_Mat;           /* 不需要知道内部实现 */
+
+        /* OpenCV 常量（直接抄一份足够用即可） */
+        #define CV_8UC3               16        /* 8-bit unsigned, 3 channels */
+        #define IMWRITE_JPEG_QUALITY   1
+
+        /* ==== C API 声明 ==== */
+        /* core */
+        extern uint64         core_Mat_sizeof(void);
+        extern ExceptionStatus core_Mat_new3(int rows,int cols,int type, MyCvScalar scalar, cv_Mat **returnValue);
+        extern ExceptionStatus core_Mat_delete(cv_Mat *self);
+        /* imgcodecs */
+        extern ExceptionStatus imgcodecs_imwrite(const char *filename, cv_Mat *img, int *params,int paramsLength,int *returnValue);
+        extern ExceptionStatus imgcodecs_imread (const char *filename,int flags, cv_Mat **returnValue);
+
+        /* ==== 帮助函数：检查返回值 ==== */
+        static void CHECK_OK(ExceptionStatus st, const char *msg)
         {
-          int i = core_Mat_sizeof();
-          printf("sizeof(Mat) = %d\n", i);
-          return 0;
-        }' > test.c
-        cat test.c
+            if(st != 0) { fprintf(stderr,"%s failed: %d\n", msg, st);  exit(st); }
+        }
+        static void CHECK_BOOL(int ok, const char *msg)
+        {
+            if(!ok)    { fprintf(stderr,"%s returned false\n", msg);   exit(1); }
+        }
+
+        int main(void)
+        {
+            printf("sizeof(Mat) reported by native = %llu\n",
+                  (unsigned long long)core_Mat_sizeof());
+
+            /* 1. 先创建一张 256x256、彩色渐变图像 ----------------------------- */
+            cv_Mat *img = NULL;
+            MyCvScalar black = {0};
+            CHECK_OK(core_Mat_new3(256, 256, CV_8UC3, black, &img), "core_Mat_new3");
+
+            /* 通过指针手动绘制一个 BGR 渐变: B = x, G = y, R = 128            */
+            unsigned char *data = NULL;
+            extern ExceptionStatus core_Mat_data(cv_Mat *self, unsigned char **returnValue);
+            CHECK_OK(core_Mat_data(img, &data), "core_Mat_data");
+            for(int y = 0; y < 256; ++y)
+            {
+                for(int x = 0; x < 256; ++x)
+                {
+                    unsigned char *pix = data + (y*256 + x)*3;
+                    pix[0] = (unsigned char)x;   /* Blue  渐变 */
+                    pix[1] = (unsigned char)y;   /* Green 渐变 */
+                    pix[2] = 128;                /* Red   固定 */
+                }
+            }
+
+            /* 2. 保存为 PNG -------------------------------------------------- */
+            int ok = 0;
+            CHECK_OK(imgcodecs_imwrite("test.png", img, NULL, 0, &ok), "imwrite PNG");
+            CHECK_BOOL(ok, "imwrite PNG");
+
+            /* 3. 读取刚写出的 PNG ------------------------------------------- */
+            cv_Mat *img2 = NULL;
+            CHECK_OK(imgcodecs_imread("test.png", /*flags=*/1, &img2), "imread PNG");
+            /* 不需要检查 NULL, 因为 C API 出错会抛异常，已在上一步捕获 */
+
+            /* 4. 以 JPEG 质量 90 再保存为 JPG -------------------------------- */
+            int jpegParams[2] = { IMWRITE_JPEG_QUALITY, 90 };
+            CHECK_OK(imgcodecs_imwrite("test.jpg", img2,
+                                      jpegParams, 2, &ok), "imwrite JPG");
+            CHECK_BOOL(ok, "imwrite JPG");
+
+            printf("PNG and JPG written successfully.\n");
+
+            /* 5. 释放资源 ---------------------------------------------------- */
+            core_Mat_delete(img);
+            core_Mat_delete(img2);
+
+            return 0;
+        }
+        EOF
+        cat test/test.c
 
     - name: Setup MSVC(Windows only)
       uses: ilammy/msvc-dev-cmd@v1
