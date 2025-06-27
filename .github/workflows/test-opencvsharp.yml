@@ -147,25 +147,17 @@ jobs:
           export MSYS2_ARG_CONV_EXCL="*"
           cl /nologo /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
         else
-          # For x64 architecture
           gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -o test.exe
         fi
         ls -lR
 
-    - name: Run Test
-      run: |
-        if [[ "${{ matrix.os }}" == osx* ]]; then
-          export DYLD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$DYLD_LIBRARY_PATH
-        elif [[ "${{ matrix.os }}" == win* ]]; then
-          export PATH="$(cygpath -u "${{ github.workspace }}/opencvsharp/lib")":$PATH
-        else
-          export LD_LIBRARY_PATH=${{ github.workspace }}/opencvsharp/lib:$LD_LIBRARY_PATH
-        fi
-        cd test && ./test.exe
-
     - name: Copy opencvsharp/lib to test
       run: |
         cp -r opencvsharp/lib/* test
+
+    - name: Run Test
+      run: |
+        cd test && ./test.exe
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
