@@ -126,12 +126,12 @@ jobs:
 
     runs-on: ${{ matrix.runs-on }}
     container:
-      image: ubuntu:20.04
+      image: ${{ matrix.image }}
 
     strategy:
       matrix:
         include:
-        - { os: ubuntu.20.04, arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: ubuntu.20.04, arch: x64,   runs-on: ubuntu-22.04, image: ubuntu:20.04 }
 
     steps:
     - name: Checkout OpenCV repo
@@ -139,3 +139,59 @@ jobs:
       with:
         repository: opencv/opencv
         ref: ${{ env.OPENCV_VERSION }}
+        path: opencv
+        fetch-depth: 1
+
+    - name: Checkout OpenCV Contrib repo
+      uses: actions/checkout@v4
+      with:
+        repository: opencv/opencv_contrib
+        ref: ${{ env.OPENCV_VERSION }}
+        path: opencv_contrib
+        fetch-depth: 1
+
+    - name: Configure OpenCV
+      run: |
+        cd opencv && mkdir build && cd build
+
+        EXTRA_FLAGS=""
+        if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
+          EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
+        elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
+          EXTRA_FLAGS+=" -A Win32"
+        fi
+
+        cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
+
+    - name: Build OpenCV
+      run: |
+        cd opencv/build
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+          cmake --build . --config Release
+        else
+          make -j$(nproc)
+        fi
+
+    - name: Install OpenCV
+      run: |
+        cd opencv/build
+        if [[ "${{ matrix.os }}" =~ ^win ]]; then
+           cmake --install . --config Release
+        else
+          make install
+        fi
+
+    - name: Show Build Artifacts
+      run: |
+        cd opencv/build && ls -lR
+
+    - name: Make artifacts
+      run: |
+        mkdir artifacts
+        cp -r opencv/build/install/* artifacts
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: opencv-${{ matrix.os }}-${{ matrix.arch }}
+        path: artifacts
