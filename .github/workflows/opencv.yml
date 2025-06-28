@@ -104,6 +104,8 @@ jobs:
             set -eux
             yum install -y oracle-epel-release-el8
             yum-config-manager --enable ol8_developer_epel
+        EOS
+          )
         fi
         echo "Executing script in Docker container: $script"
         docker exec builder bash -c "$script"
