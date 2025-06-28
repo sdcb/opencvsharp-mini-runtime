@@ -112,7 +112,7 @@ jobs:
             cat <<'EOS'
             # yum groupinstall -y "Development Tools"
             # yum install -y devtoolset-11-gcc devtoolset-11-gcc-c++ cmake3
-            yum install -y gcc cmake3
+            yum install -y gcc cmake3 gcc-c++ make
 
             ln -s /usr/bin/cmake3 /usr/bin/cmake
         EOS
