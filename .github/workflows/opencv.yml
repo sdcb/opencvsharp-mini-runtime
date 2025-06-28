@@ -96,6 +96,14 @@ jobs:
             sed -i 's|mirror.centos.org|vault.centos.org|g' /etc/yum.repos.d/CentOS-*.repo
             yum clean all
             yum makecache
+
+            yum install -y epel-release centos-release-scl
+            for f in /etc/yum.repos.d/CentOS*.repo /etc/yum.repos.d/epel*.repo; do
+              sed -i -e 's|^mirrorlist=|#mirrorlist=|g' \
+                     -e 's|^#baseurl=|baseurl=|g'       \
+                     -e 's|mirror.centos.org|vault.centos.org|g' "$f"
+            done
+            yum clean all && yum makecache -y
         EOS
           )
         fi
@@ -108,7 +116,6 @@ jobs:
         if [[ "${{ matrix.os }}" == "centos.7" ]]; then
           script=$(
             cat <<'EOS'
-            yum install -y epel-release centos-release-scl
             yum groupinstall -y "Development Tools"
             yum install -y cmake3 devtoolset-11-gcc devtoolset-11-gcc-c++
             source /opt/rh/devtoolset-11/enable
