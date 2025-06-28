@@ -110,6 +110,7 @@ jobs:
             cat <<'EOS'
             yum install -y epel-release
             yum install -y gcc cmake3
+            ln -s /usr/bin/cmake3 /usr/bin/cmake
         EOS
           )
         fi
