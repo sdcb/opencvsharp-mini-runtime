@@ -136,7 +136,7 @@ jobs:
 
     steps:
     - name: Checkout OpenCV repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
       with:
         repository: opencv/opencv
         ref: ${{ env.OPENCV_VERSION }}
@@ -144,7 +144,7 @@ jobs:
         fetch-depth: 1
 
     - name: Checkout OpenCV Contrib repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
       with:
         repository: opencv/opencv_contrib
         ref: ${{ env.OPENCV_VERSION }}
