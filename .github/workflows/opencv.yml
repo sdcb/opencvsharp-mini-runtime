@@ -91,12 +91,12 @@ jobs:
           script=$(
             cat <<'EOS'
             set -eux
-            yum install -y oraclelinux-developer-release-el7
-            yum install -y oracle-epel-release-el7
+            # yum install -y oraclelinux-developer-release-el7
+            # yum install -y oracle-epel-release-el7
             yum install -y oracle-softwarecollection-release-el7
             
-            yum-config-manager --enable ol7_developer
-            yum-config-manager --enable ol7_developer_epel
+            # yum-config-manager --enable ol7_developer
+            # yum-config-manager --enable ol7_developer_epel
             yum-config-manager --enable ol7_software_collections
         EOS
           )
@@ -110,9 +110,9 @@ jobs:
         if [[ "${{ matrix.os }}" == "centos.7" ]]; then
           script=$(
             cat <<'EOS'
-            yum groupinstall -y "Development Tools"
-            yum install -y devtoolset-11-gcc devtoolset-11-gcc-c++ cmake3
-            yum clean all
+            # yum groupinstall -y "Development Tools"
+            # yum install -y devtoolset-11-gcc devtoolset-11-gcc-c++ cmake3
+            yum install -y gcc cmake3
 
             ln -s /usr/bin/cmake3 /usr/bin/cmake
         EOS
@@ -132,7 +132,7 @@ jobs:
           elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
             EXTRA_FLAGS+=" -A Win32"
           elif [[ ${{ matrix.os }} == "centos.7" ]]; then
-            source /opt/rh/devtoolset-11/enable
+            # source /opt/rh/devtoolset-11/enable
           fi
   
           cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
