@@ -126,6 +126,9 @@ jobs:
             EXTRA_FLAGS+=" -A Win32"
           elif [[ ${{ matrix.os }} == "centos.7" ]]; then
             EXTRA_FLAGS+=" -DCMAKE_C_FLAGS='-std=gnu99'"
+            if [[ "${{ matrix.arch }}" == "arm64" ]]; then
+              EXTRA_FLAGS+=" -DWEBP_ENABLE_SIMD=OFF"
+            fi
           fi
   
           cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
