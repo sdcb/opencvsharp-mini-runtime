@@ -113,7 +113,7 @@ jobs:
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
       run: |
-        if [[ "${{ matrix.os }}" == "centos.7" or "${{ matrix.os }}" == "rhel.8" ]]; then
+        if [[ "${{ matrix.os }}" == "centos.7" || "${{ matrix.os }}" == "rhel.8" ]]; then
           script=$(
             cat <<'EOS'
             yum install -y gcc cmake3 gcc-c++ make nasm
