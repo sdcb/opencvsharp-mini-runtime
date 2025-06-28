@@ -98,12 +98,6 @@ jobs:
             yum makecache
 
             yum install -y epel-release centos-release-scl
-            for f in /etc/yum.repos.d/CentOS*.repo /etc/yum.repos.d/epel*.repo; do
-              sed -i -e 's|^mirrorlist=|#mirrorlist=|g' \
-                     -e 's|^#baseurl=|baseurl=|g'       \
-                     -e 's|mirror.centos.org|vault.centos.org|g' "$f"
-            done
-            yum clean all && yum makecache -y
         EOS
           )
         fi
