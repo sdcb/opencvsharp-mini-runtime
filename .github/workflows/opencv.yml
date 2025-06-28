@@ -117,7 +117,6 @@ jobs:
             cat <<'EOS'
             set -eux
             yum install -y gcc cmake3 gcc-c++ make nasm
-            ln -s /usr/bin/cmake3 /usr/bin/cmake
         EOS
           )
         fi
@@ -136,6 +135,7 @@ jobs:
             EXTRA_FLAGS+=" -A Win32"
           elif [[ ${{ matrix.os }} == "centos.7" ]]; then
             EXTRA_FLAGS+=" -DCMAKE_C_FLAGS='-std=gnu99'"
+            ln -s /usr/bin/cmake3 /usr/bin/cmake
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
               echo "::group::Disable NEON in libwebp for CentOS 7 ARM64"
               sed -i 's/\<WEBP_USE_NEON\>/WEBP_USE_NEON_DISABLED/' opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
