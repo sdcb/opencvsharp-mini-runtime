@@ -127,7 +127,8 @@ jobs:
           elif [[ ${{ matrix.os }} == "centos.7" ]]; then
             EXTRA_FLAGS+=" -DCMAKE_C_FLAGS='-std=gnu99'"
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-              EXTRA_FLAGS+=" -DWEBP_USE_NEON=0"
+              sed -i 's/\<WEBP_USE_NEON\>/WEBP_USE_NEON_DISABLED/' opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
+              cat opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
             fi
           fi
   
