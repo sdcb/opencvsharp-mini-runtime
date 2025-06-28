@@ -57,6 +57,8 @@ jobs:
         # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
+        - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
+        - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
 
     steps:
     - name: Checkout OpenCV repo
@@ -96,6 +98,12 @@ jobs:
             yum-config-manager --enable ol7_developer_epel
         EOS
           )
+        elif [[ "${{ matrix.os }}" == "rhel.8" ]]; then
+          script=$(
+            cat <<'EOS'
+            set -eux
+            yum install -y oracle-epel-release-el8
+            yum-config-manager --enable ol8_developer_epel
         fi
         echo "Executing script in Docker container: $script"
         docker exec builder bash -c "$script"
@@ -103,7 +111,7 @@ jobs:
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
       run: |
-        if [[ "${{ matrix.os }}" == "centos.7" ]]; then
+        if [[ "${{ matrix.os }}" == "centos.7" or "${{ matrix.os }}" == "rhel.8" ]]; then
           script=$(
             cat <<'EOS'
             yum install -y gcc cmake3 gcc-c++ make nasm
