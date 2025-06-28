@@ -45,7 +45,7 @@ jobs:
       matrix:
         include:
         - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: centos.7,       arch: x64,   runs-on: ubuntu-22.04, image: centos:7 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04, image: centos:7 }
         # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
         # - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
         # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
@@ -117,33 +117,62 @@ jobs:
 
     - name: Configure OpenCV
       run: |
-        cd opencv && mkdir build && cd build
+        script=$(
+          cat <<'EOS'
+          cd opencv && mkdir build && cd build
+          EXTRA_FLAGS=""
+          if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
+            EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
+          elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
+            EXTRA_FLAGS+=" -A Win32"
+          fi
+  
+          cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
+        EOS
+        )
 
-        EXTRA_FLAGS=""
-        if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
-          EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
-        elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
-          EXTRA_FLAGS+=" -A Win32"
+        if [[ -n "${{ matrix.image }}" ]]; then
+          bash -c "$script"
+        else
+          docker exec builder bash -c "$script"
         fi
-
-        cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
 
     - name: Build OpenCV
       run: |
-        cd opencv/build
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          cmake --build . --config Release
+        script=$(
+          cat <<'EOS'
+          cd opencv/build
+          if [[ "${{ matrix.os }}" =~ ^win ]]; then
+            cmake --build . --config Release
+          else
+            make -j$(nproc)
+          fi
+        EOS
+        )
+
+        if [[ -n "${{ matrix.image }}" ]]; then
+          bash -c "$script"
         else
-          make -j$(nproc)
+          docker exec builder bash -c "$script"
         fi
 
     - name: Install OpenCV
       run: |
-        cd opencv/build
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-           cmake --install . --config Release
+        script=$(
+          cat <<'EOS'
+          cd opencv/build
+          if [[ "${{ matrix.os }}" =~ ^win ]]; then
+             cmake --install . --config Release
+          else
+            make install
+          fi
+        EOS
+        )
+
+        if [[ -n "${{ matrix.image }}" ]]; then
+          bash -c "$script"
         else
-          make install
+          docker exec builder bash -c "$script"
         fi
 
     - name: Show Build Artifacts
