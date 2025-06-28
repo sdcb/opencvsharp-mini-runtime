@@ -2,8 +2,8 @@ name: Build-OpenCV
 
 on:
   push:
-    branches: [ main ]
-    paths: [ '.github/workflows/opencv.yml' ]
+    branches: [ main, feature/docker ]
+    paths: [ .github/workflows/opencv.yml ]
   workflow_dispatch:
 
 env:
@@ -34,27 +34,104 @@ env:
     -D OPENCV_ENABLE_NONFREE=OFF
 
 jobs:
-  build:
+  # build:
+  #   defaults:
+  #     run:
+  #       shell: bash
+
+  #   runs-on: ${{ matrix.runs-on }}
+
+  #   strategy:
+  #     matrix:
+  #       include:
+  #       - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
+  #       - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+  #       - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
+  #       - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+  #       - { os: win,          arch: x64,   runs-on: windows-2022 }
+  #       - { os: win,          arch: x86,   runs-on: windows-2022 }
+  #       - { os: win11,        arch: x64,   runs-on: windows-2025 }
+  #       - { os: win,          arch: arm64, runs-on: windows-11-arm }
+  #       - { os: osx,          arch: x64,   runs-on: macos-13 }
+  #       - { os: osx,          arch: arm64, runs-on: macos-14 }
+  #       - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+
+  #   steps:
+  #   - name: Checkout OpenCV repo
+  #     uses: actions/checkout@v4
+  #     with:
+  #       repository: opencv/opencv
+  #       ref: ${{ env.OPENCV_VERSION }}
+  #       path: opencv
+  #       fetch-depth: 1
+
+  #   - name: Checkout OpenCV Contrib repo
+  #     uses: actions/checkout@v4
+  #     with:
+  #       repository: opencv/opencv_contrib
+  #       ref: ${{ env.OPENCV_VERSION }}
+  #       path: opencv_contrib
+  #       fetch-depth: 1
+
+  #   - name: Configure OpenCV
+  #     run: |
+  #       cd opencv && mkdir build && cd build
+
+  #       EXTRA_FLAGS=""
+  #       if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
+  #         EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
+  #       elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
+  #         EXTRA_FLAGS+=" -A Win32"
+  #       fi
+
+  #       cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
+
+  #   - name: Build OpenCV
+  #     run: |
+  #       cd opencv/build
+  #       if [[ "${{ matrix.os }}" =~ ^win ]]; then
+  #         cmake --build . --config Release
+  #       else
+  #         make -j$(nproc)
+  #       fi
+
+  #   - name: Install OpenCV
+  #     run: |
+  #       cd opencv/build
+  #       if [[ "${{ matrix.os }}" =~ ^win ]]; then
+  #          cmake --install . --config Release
+  #       else
+  #         make install
+  #       fi
+
+  #   - name: Show Build Artifacts
+  #     run: |
+  #       cd opencv/build && ls -lR
+
+  #   - name: Make artifacts
+  #     run: |
+  #       mkdir artifacts
+  #       cp -r opencv/build/install/* artifacts
+
+  #   - name: Upload Artifacts
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: opencv-${{ matrix.os }}-${{ matrix.arch }}
+  #       path: artifacts
+
+  build-in-docker:
     defaults:
       run:
         shell: bash
 
     runs-on: ${{ matrix.runs-on }}
+    container:
+      image: ubuntu:20.04
 
     strategy:
       matrix:
         include:
-          - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
-          - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-          - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
-          - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-          - { os: win,          arch: x64,   runs-on: windows-2022 }
-          - { os: win,          arch: x86,   runs-on: windows-2022 }
-          - { os: win11,        arch: x64,   runs-on: windows-2025 }
-          - { os: win,          arch: arm64, runs-on: windows-11-arm }
-          - { os: osx,          arch: x64,   runs-on: macos-13 }
-          - { os: osx,          arch: arm64, runs-on: macos-14 }
-          - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        - { os: ubuntu.20.04, arch: x64,   runs-on: ubuntu-22.04 }
 
     steps:
     - name: Checkout OpenCV repo
@@ -62,59 +139,3 @@ jobs:
       with:
         repository: opencv/opencv
         ref: ${{ env.OPENCV_VERSION }}
-        path: opencv
-        fetch-depth: 1
-
-    - name: Checkout OpenCV Contrib repo
-      uses: actions/checkout@v4
-      with:
-        repository: opencv/opencv_contrib
-        ref: ${{ env.OPENCV_VERSION }}
-        path: opencv_contrib
-        fetch-depth: 1
-
-    - name: Configure OpenCV
-      run: |
-        cd opencv && mkdir build && cd build
-
-        EXTRA_FLAGS=""
-        if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
-          EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
-        elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
-          EXTRA_FLAGS+=" -A Win32"
-        fi
-
-        cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
-
-    - name: Build OpenCV
-      run: |
-        cd opencv/build
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          cmake --build . --config Release
-        else
-          make -j$(nproc)
-        fi
-
-    - name: Install OpenCV
-      run: |
-        cd opencv/build
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-           cmake --install . --config Release
-        else
-          make install
-        fi
-
-    - name: Show Build Artifacts
-      run: |
-        cd opencv/build && ls -lR
-
-    - name: Make artifacts
-      run: |
-        mkdir artifacts
-        cp -r opencv/build/install/* artifacts
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: opencv-${{ matrix.os }}-${{ matrix.arch }}
-        path: artifacts
