@@ -45,7 +45,6 @@ jobs:
       matrix:
         include:
         - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04, image: oraclelinux:7 }
         # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
         # - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
         # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
@@ -56,6 +55,8 @@ jobs:
         # - { os: osx,          arch: x64,   runs-on: macos-13 }
         # - { os: osx,          arch: arm64, runs-on: macos-14 }
         # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
 
     steps:
     - name: Checkout OpenCV repo
