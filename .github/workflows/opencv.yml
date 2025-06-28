@@ -109,7 +109,7 @@ jobs:
           script=$(
             cat <<'EOS'
             yum install -y epel-release
-            yum install -y gcc cmake3
+            yum install -y gcc cmake3 devtoolset-11-gcc devtoolset-11-gcc-c++
             ln -s /usr/bin/cmake3 /usr/bin/cmake
         EOS
           )
