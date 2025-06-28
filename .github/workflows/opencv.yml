@@ -132,6 +132,7 @@ jobs:
       matrix:
         include:
         - { os: ubuntu.20.04, arch: x64,   runs-on: ubuntu-22.04, image: ubuntu:20.04 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04, image: centos:7 }
 
     steps:
     - name: Checkout OpenCV repo
