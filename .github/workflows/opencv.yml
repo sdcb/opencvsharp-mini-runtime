@@ -59,6 +59,8 @@ jobs:
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
+        - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
+        - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
 
     steps:
     - name: Checkout OpenCV repo
@@ -105,6 +107,13 @@ jobs:
             dnf config-manager --set-enabled ol8_codeready_builder
         EOS
           )
+        elif [[ "${{ matrix.os }}" == "rhel.9" ]]; then
+          script=$(
+            cat <<'EOS'
+            set -eux
+            dnf config-manager --set-enabled ol9_codeready_builder
+        EOS
+          )
         fi
         echo "Executing script in Docker container: $script"
         docker exec builder bash -c "$script"
@@ -112,7 +121,7 @@ jobs:
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
       run: |
-        if [[ "${{ matrix.os }}" == "centos.7" || "${{ matrix.os }}" == "rhel.8" ]]; then
+        if [[ "${{ matrix.os }}" == "centos.7" || "${{ matrix.os }}" =~ "rhel." ]]; then
           script=$(
             cat <<'EOS'
             set -eux
