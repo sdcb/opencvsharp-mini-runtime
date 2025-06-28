@@ -114,7 +114,6 @@ jobs:
             yum install -y devtoolset-11-gcc devtoolset-11-gcc-c++ cmake3
             yum clean all
 
-            echo "source /opt/rh/devtoolset-11/enable" > /etc/profile.d/enable-gcc11.sh
             ln -s /usr/bin/cmake3 /usr/bin/cmake
         EOS
           )
@@ -132,6 +131,8 @@ jobs:
             EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
           elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
             EXTRA_FLAGS+=" -A Win32"
+          elif [[ ${{ matrix.os }} == "centos.7" ]]; then
+            source /opt/rh/devtoolset-11/enable
           fi
   
           cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
