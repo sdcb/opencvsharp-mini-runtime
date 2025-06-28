@@ -108,6 +108,7 @@ jobs:
         if [[ "${{ matrix.os }}" == "centos.7" ]]; then
           script=$(
             cat <<'EOS'
+            yum install -y epel-release
             yum install -y gcc cmake3
         EOS
           )
