@@ -57,8 +57,8 @@ jobs:
         # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
-        - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
-        - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
+        - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
+        - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
 
     steps:
     - name: Checkout OpenCV repo
