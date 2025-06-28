@@ -45,16 +45,16 @@ jobs:
       matrix:
         include:
         - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
-        # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-        # - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
-        # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-        # - { os: win,          arch: x64,   runs-on: windows-2022 }
-        # - { os: win,          arch: x86,   runs-on: windows-2022 }
-        # - { os: win11,        arch: x64,   runs-on: windows-2025 }
-        # - { os: win,          arch: arm64, runs-on: windows-11-arm }
-        # - { os: osx,          arch: x64,   runs-on: macos-13 }
-        # - { os: osx,          arch: arm64, runs-on: macos-14 }
-        # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: win,          arch: x64,   runs-on: windows-2022 }
+        - { os: win,          arch: x86,   runs-on: windows-2022 }
+        - { os: win11,        arch: x64,   runs-on: windows-2025 }
+        - { os: win,          arch: arm64, runs-on: windows-11-arm }
+        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: arm64, runs-on: macos-14 }
+        - { os: osx.15,       arch: arm64, runs-on: macos-15 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
