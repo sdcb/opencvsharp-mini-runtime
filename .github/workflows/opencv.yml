@@ -98,6 +98,13 @@ jobs:
             yum-config-manager --enable ol7_developer_epel
         EOS
           )
+        elif [[ "${{ matrix.os }}" == "rhel.8" ]]; then
+          script=$(
+            cat <<'EOS'
+            set -eux
+            dnf config-manager --set-enabled ol8_codeready_builder
+        EOS
+          )
         fi
         echo "Executing script in Docker container: $script"
         docker exec builder bash -c "$script"
@@ -108,6 +115,7 @@ jobs:
         if [[ "${{ matrix.os }}" == "centos.7" || "${{ matrix.os }}" == "rhel.8" ]]; then
           script=$(
             cat <<'EOS'
+            set -eux
             yum install -y gcc cmake3 gcc-c++ make nasm
             ln -s /usr/bin/cmake3 /usr/bin/cmake
         EOS
@@ -120,6 +128,7 @@ jobs:
       run: |
         script=$(
           cat <<'EOS'
+          set -eux
           EXTRA_FLAGS=""
           if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
             EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
@@ -150,6 +159,7 @@ jobs:
       run: |
         script=$(
           cat <<'EOS'
+          set -eux
           cd opencv/build
           if [[ "${{ matrix.os }}" =~ ^win ]]; then
             cmake --build . --config Release
