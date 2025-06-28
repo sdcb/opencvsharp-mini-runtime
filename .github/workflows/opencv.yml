@@ -133,6 +133,7 @@ jobs:
             EXTRA_FLAGS+=" -A Win32"
           elif [[ ${{ matrix.os }} == "centos.7" ]]; then
             # source /opt/rh/devtoolset-11/enable
+            echo "Doing nothing for centos.7"
           fi
   
           cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
