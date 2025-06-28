@@ -127,7 +127,7 @@ jobs:
           elif [[ ${{ matrix.os }} == "centos.7" ]]; then
             EXTRA_FLAGS+=" -DCMAKE_C_FLAGS='-std=gnu99'"
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-              EXTRA_FLAGS+=" -DWEBP_ENABLE_SIMD=OFF"
+              EXTRA_FLAGS+=" -DWEBP_USE_NEON=0"
             fi
           fi
   
