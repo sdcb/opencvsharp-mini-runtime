@@ -118,7 +118,6 @@ jobs:
       run: |
         script=$(
           cat <<'EOS'
-          cd opencv && mkdir build && cd build
           EXTRA_FLAGS=""
           if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
             EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
@@ -131,7 +130,8 @@ jobs:
               cat opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
             fi
           fi
-  
+
+          cd opencv && mkdir build && cd build
           cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
         EOS
         )
