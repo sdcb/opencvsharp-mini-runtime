@@ -137,7 +137,7 @@ jobs:
           OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
           if [[ "${{ matrix.os }}" =~ ^win ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc17/staticlib"
-          if [[ "${{ matrix.image }}" =~ ^oraclelinux ]]; then
+          elif [[ "${{ matrix.image }}" =~ ^oraclelinux ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/lib64/cmake/opencv4"
           fi
 
