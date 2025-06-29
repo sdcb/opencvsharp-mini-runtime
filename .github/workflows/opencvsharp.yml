@@ -133,10 +133,11 @@ jobs:
         script=$(
           cat <<'EOS'
           set -eux
+          OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
           if [[ "${{ matrix.os }}" =~ ^win ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc17/staticlib"
-          else
-            OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
+          elif [[ ${{ matrix.os }} == "centos.7" ]]; then
+            ln -s /usr/bin/cmake3 /usr/bin/cmake
           fi
 
           EXTRA_FLAGS=""
