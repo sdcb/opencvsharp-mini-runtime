@@ -61,6 +61,8 @@ jobs:
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
+        - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
+        - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
 
     steps:
     - name: Checkout OpenCV repo
@@ -150,6 +152,20 @@ jobs:
               sed -i 's/\<WEBP_USE_NEON\>/WEBP_USE_NEON_DISABLED/' opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
               cat opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
               echo "::endgroup::"
+            fi
+          elif [[ "${{ matrix.os }}" == "android" ]]; then
+            echo "Configuring for Android / ${{ matrix.arch }}"
+          
+            EXTRA_FLAGS+=" -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake"
+            EXTRA_FLAGS+=" -DANDROID_PLATFORM=android-24"
+            EXTRA_FLAGS+=" -DANDROID_STL=c++_static"
+            EXTRA_FLAGS+=" -DBUILD_ANDROID_EXAMPLES=OFF"
+            EXTRA_FLAGS+=" -DBUILD_ANDROID_PROJECTS=OFF"
+          
+            if [[ "${{ matrix.arch }}" == "arm64" ]]; then
+              EXTRA_FLAGS+=" -DANDROID_ABI=arm64-v8a"
+            elif [[ "${{ matrix.arch }}" == "x64" ]]; then
+              EXTRA_FLAGS+=" -DANDROID_ABI=x86_64"
             fi
           fi
 
