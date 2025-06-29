@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - main
+      - feature/docker
     paths: 
       - .github/workflows/opencvsharp.yml
       - 'eng/opencvsharp.patch'
