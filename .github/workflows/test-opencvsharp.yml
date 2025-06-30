@@ -189,14 +189,14 @@ jobs:
             API=24
             ls -lR $ANDROID_NDK/toolchains/llvm/prebuilt/
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-              CLANG=$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${API}-clang
+              CLANG=$ANDROID_NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android${API}-clang
             elif [[ "${{ matrix.arch }}" == "x64" ]]; then
               CLANG=$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${API}-clang
             else
               echo "Unsupported architecture for Android: ${{ matrix.arch }}"
               exit 1
             fi
-            $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/${TRIPLET}${API}-clang test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
+            $CLANG test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           else
             gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           fi
