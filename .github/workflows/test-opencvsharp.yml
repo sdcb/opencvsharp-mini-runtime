@@ -17,17 +17,25 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
-          - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-          - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
-          - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-          - { os: win,          arch: x64,   runs-on: windows-2022 }
-          - { os: win,          arch: x86,   runs-on: windows-2022 }
-          - { os: win11,        arch: x64,   runs-on: windows-2025 }
-          - { os: win,          arch: arm64, runs-on: windows-11-arm }
-          - { os: osx,          arch: x64,   runs-on: macos-13 }
-          - { os: osx,          arch: arm64, runs-on: macos-14 }
-          - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: win,          arch: x64,   runs-on: windows-2022 }
+        - { os: win,          arch: x86,   runs-on: windows-2022 }
+        - { os: win11,        arch: x64,   runs-on: windows-2025 }
+        - { os: win,          arch: arm64, runs-on: windows-11-arm }
+        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: arm64, runs-on: macos-14 }
+        - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
+        - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
+        - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
+        - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
+        - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
+        # - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
+        # - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
 
     steps:
     - name: Download OpenCvSharp Artifacts
@@ -140,18 +148,53 @@ jobs:
       with:
         arch: ${{ matrix.arch }}
 
+    - name: Pull Docker Image
+      if: matrix.image != ''
+      run: |
+        docker pull ${{ matrix.image }}
+
+    - name: Start Docker Container
+      if: matrix.image != ''
+      run: |
+        docker run -d --name builder -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
+
+    - name: Install Dependencies in Docker Container
+      if: matrix.image != ''
+      run: |
+        if [[ "${{ matrix.os }}" == "centos.7" || "${{ matrix.os }}" =~ "rhel." ]]; then
+          script=$(
+            cat <<'EOS'
+            set -eux
+            yum install -y gcc
+        EOS
+          )
+        fi
+        echo "Executing script in Docker container: $script"
+        docker exec builder bash -c "$script"
+
     - name: Build Test
       run: |
-        cd test
-        if [[ "${{ runner.os }}" == Windows ]]; then
-          export MSYS2_ARG_CONV_EXCL="*"
-          cl /nologo /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
-        elif [[ "${{ runner.os }}" == macOS ]]; then
-          gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
+        script=$(
+          cat <<'EOS'
+          set -eux
+          cd test
+          if [[ "${{ runner.os }}" == Windows ]]; then
+            export MSYS2_ARG_CONV_EXCL="*"
+            cl /nologo /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
+          elif [[ "${{ runner.os }}" == macOS ]]; then
+            gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
+          else
+            gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe 
+          fi
+          ls -lR
+        EOS
+        )
+
+        if [[ "${{ matrix.image }}" == "" ]]; then
+          bash -c "$script"
         else
-          gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe 
+          docker exec builder bash -c "$script"
         fi
-        ls -lR
 
     - name: Copy opencvsharp/lib to test
       run: |
@@ -159,7 +202,11 @@ jobs:
 
     - name: Run Test
       run: |
-        cd test && ./test.exe
+        if [[ "${{ matrix.image }}" == "" ]]; then
+          cd test && ./test.exe
+        else
+          docker exec builder bash -c "cd test && ./test.exe"
+        fi
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
