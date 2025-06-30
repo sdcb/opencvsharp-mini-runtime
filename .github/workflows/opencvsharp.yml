@@ -237,7 +237,7 @@ jobs:
 
         case "${{ matrix.os }}" in
           android)
-            llvm-readelf -d OpenCvSharpExtern/libOpenCvSharpExtern.so | grep NEEDED
+            $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf -d OpenCvSharpExtern/libOpenCvSharpExtern.so | grep NEEDED
             ;;
           linux)
             ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
