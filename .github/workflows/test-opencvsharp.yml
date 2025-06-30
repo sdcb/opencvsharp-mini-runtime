@@ -234,7 +234,7 @@ jobs:
       if: matrix.os == 'android'
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 27
+        api-level: 28
         arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'arm64-v8a' }}
         target: google_apis
         script: |
