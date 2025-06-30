@@ -235,11 +235,17 @@ jobs:
         ls -lR
         echo "::endgroup::"
 
-        if [[ ${{ matrix.runs-on }} =~ ^ubuntu ]]; then
-          ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
-        elif [[ ${{ matrix.os }} =~ ^osx ]]; then
-          otool -L OpenCvSharpExtern/libOpenCvSharpExtern.dylib
-        fi
+        case "${{ matrix.os }}" in
+          android)
+            llvm-readelf -d OpenCvSharpExtern/libOpenCvSharpExtern.so | grep NEEDED
+            ;;
+          linux)
+            ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
+            ;;
+          osx*)
+            otool -L OpenCvSharpExtern/libOpenCvSharpExtern.dylib
+            ;;
+        esac
 
     - name: Make artifacts
       run: |
