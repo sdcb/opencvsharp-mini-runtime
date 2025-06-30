@@ -210,6 +210,9 @@ jobs:
           else        # Linux
             strip --strip-unneeded "$BIN"
           fi
+
+          echo "Size after strip:"
+          du -h "$BIN"
         EOS
         )
 
@@ -218,9 +221,6 @@ jobs:
         else
           docker exec builder bash -c "$script"
         fi
-  
-        echo "Size after strip:"
-        du -h "$BIN"
 
     - name: Show OpenCvSharp Artifacts
       run: |
