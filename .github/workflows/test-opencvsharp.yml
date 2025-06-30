@@ -187,6 +187,7 @@ jobs:
             gcc -std=c99 test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           elif [[ "${{ matrix.os }}" == "android" ]]; then
             API=24
+            ls $ANDROID_NDK/toolchains/llvm/prebuilt
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
               TRIPLET=aarch64-linux-android
             elif [[ "${{ matrix.arch }}" == "x64" ]]; then
