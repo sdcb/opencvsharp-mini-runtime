@@ -34,8 +34,8 @@ jobs:
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
-        # - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
-        # - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
+        - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
 
     steps:
     - name: Download OpenCvSharp Artifacts
@@ -157,7 +157,6 @@ jobs:
       if: matrix.image != ''
       run: |
         docker run -d --name builder -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
-        docker run -d --name runner  -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
 
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
@@ -208,7 +207,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           cd test && ./test.exe
         else
-          docker exec runner bash -c "cd test && ./test.exe"
+          docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} bash -c "cd test && ./test.exe"
         fi
 
     - name: Upload Artifacts
