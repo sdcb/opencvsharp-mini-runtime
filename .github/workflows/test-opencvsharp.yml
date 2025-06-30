@@ -222,15 +222,23 @@ jobs:
           docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} bash -c "cd test && ./test.exe"
         fi
 
+    - name: Enable KVM group perms
+      if: matrix.os == 'android'
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
     - name: Run Test on Android
       if: matrix.os == 'android'
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 34
+        api-level: 29
         arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'arm64-v8a' }}
+        target: google_apis
         script: |
           adb push -a test /data/local/tmp/
-          adb shell '/data/local/tmp/test/test.exe'
+          adb shell 'cd /data/local/tmp/test && ./test.exe'
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
