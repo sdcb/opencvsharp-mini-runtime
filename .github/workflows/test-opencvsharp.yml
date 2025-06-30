@@ -183,8 +183,10 @@ jobs:
             cl /nologo /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
           elif [[ "${{ runner.os }}" == macOS ]]; then
             gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
+          elif [[ "${{ matrix.os }}" == "centos.7" ]]; then
+            gcc -std=c99 test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           else
-            gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe 
+            gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           fi
           ls -lR
         EOS
