@@ -185,6 +185,17 @@ jobs:
             gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
           elif [[ "${{ matrix.os }}" == "centos.7" ]]; then
             gcc -std=c99 test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
+          elif [[ "${{ matrix.os }}" == "android" ]]; then
+            API=24
+            if [[ "${{ matrix.arch }}" == "arm64" ]]; then
+              TRIPLET=aarch64-linux-android
+            elif [[ "${{ matrix.arch }}" == "x64" ]]; then
+              TRIPLET=x86_64-linux-android
+            else
+              echo "Unsupported architecture for Android: ${{ matrix.arch }}"
+              exit 1
+            fi
+            $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/${TRIPLET}${API}-clang test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           else
             gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           fi
@@ -203,12 +214,23 @@ jobs:
         cp -r opencvsharp/lib/* test
 
     - name: Run Test
+      if: matrix.os != 'android'
       run: |
         if [[ "${{ matrix.image }}" == "" ]]; then
           cd test && ./test.exe
         else
           docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} bash -c "cd test && ./test.exe"
         fi
+
+    - name: Run Test on Android
+      if: matrix.os == 'android'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 34
+        arch: ${{ matrix.arch == 'x64' && 'x86_64' || 'arm64-v8a' }}
+        script: |
+          adb push -a test /data/local/tmp/
+          adb shell '/data/local/tmp/test/test.exe'
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
