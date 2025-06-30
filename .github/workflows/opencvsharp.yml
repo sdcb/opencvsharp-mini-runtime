@@ -212,7 +212,7 @@ jobs:
             BIN="OpenCvSharpExtern/libOpenCvSharpExtern.dylib"
             strip -x "$BIN"
           elif [[ "${{ matrix.os }}" == "android" ]]; then
-            llvm-strip --strip-unneeded "$BIN"
+            $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded "$BIN"
           else        # Linux
             strip --strip-unneeded "$BIN"
           fi
