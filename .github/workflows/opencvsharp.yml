@@ -160,7 +160,6 @@ jobs:
             elif [[ "${{ matrix.arch }}" == "x64" ]]; then
               EXTRA_FLAGS+=" -DANDROID_ABI=x86_64"
             fi
-           fi
           fi
 
           cd opencvsharp && mkdir build && cd build
