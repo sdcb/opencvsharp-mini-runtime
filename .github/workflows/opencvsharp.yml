@@ -187,27 +187,38 @@ jobs:
 
     - name: Strip OpenCvSharpExtern
       run: |
-        cd opencvsharp/build
-        BIN="OpenCvSharpExtern/libOpenCvSharpExtern.so"
-
-        if [[ "${{ matrix.os }}" =~ ^win ]]; then
-          BIN="OpenCvSharpExtern/Release/OpenCvSharpExtern.dll"
-          llvm-objcopy --strip-all "$BIN"
-        elif [[ "${{ matrix.os }}" =~ ^osx ]]; then
-          BIN="OpenCvSharpExtern/libOpenCvSharpExtern.dylib"
-          strip -x "$BIN"
-        elif [[ "${{ matrix.os }}" == "android" ]]; then
-          if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-            aarch64-linux-android-strip --strip-unneeded "$BIN"
-          elif [[ "${{ matrix.arch }}" == "x64" ]]; then
-            x86_64-linux-android-strip --strip-unneeded "$BIN"
-          else
-            echo "Unsupported Android architecture: ${{ matrix.arch }}"
+        script=$(
+          cat <<'EOS'
+          set -eux
+          cd opencvsharp/build
+          BIN="OpenCvSharpExtern/libOpenCvSharpExtern.so"
+  
+          if [[ "${{ matrix.os }}" =~ ^win ]]; then
+            BIN="OpenCvSharpExtern/Release/OpenCvSharpExtern.dll"
+            llvm-objcopy --strip-all "$BIN"
+          elif [[ "${{ matrix.os }}" =~ ^osx ]]; then
+            BIN="OpenCvSharpExtern/libOpenCvSharpExtern.dylib"
+            strip -x "$BIN"
+          elif [[ "${{ matrix.os }}" == "android" ]]; then
+            if [[ "${{ matrix.arch }}" == "arm64" ]]; then
+              aarch64-linux-android-strip --strip-unneeded "$BIN"
+            elif [[ "${{ matrix.arch }}" == "x64" ]]; then
+              x86_64-linux-android-strip --strip-unneeded "$BIN"
+            else
+              echo "Unsupported Android architecture: ${{ matrix.arch }}"
+            fi
+          else        # Linux
+            strip --strip-unneeded "$BIN"
           fi
-        else        # Linux
-          strip --strip-unneeded "$BIN"
-        fi
+        EOS
+        )
 
+        if [[ "${{ matrix.image }}" == "" ]]; then
+          bash -c "$script"
+        else
+          docker exec builder bash -c "$script"
+        fi
+  
         echo "Size after strip:"
         du -h "$BIN"
 
