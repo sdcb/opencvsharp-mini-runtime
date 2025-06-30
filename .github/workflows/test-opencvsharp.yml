@@ -157,6 +157,7 @@ jobs:
       if: matrix.image != ''
       run: |
         docker run -d --name builder -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
+        docker run -d --name runner  -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
 
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
@@ -207,7 +208,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           cd test && ./test.exe
         else
-          docker exec builder bash -c "cd test && ./test.exe"
+          docker exec runner bash -c "cd test && ./test.exe"
         fi
 
     - name: Upload Artifacts
