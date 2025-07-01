@@ -34,7 +34,7 @@ jobs:
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
-        - { os: android,      arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
         - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
 
     steps:
@@ -189,14 +189,14 @@ jobs:
             API=24
             ls -lR $ANDROID_NDK/toolchains/llvm/prebuilt/
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-              CLANG=$ANDROID_NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android${API}-clang
+              CLANG=aarch64-linux-android${API}-clang
             elif [[ "${{ matrix.arch }}" == "x64" ]]; then
-              CLANG=$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${API}-clang
+              CLANG=x86_64-linux-android${API}-clang
             else
               echo "Unsupported architecture for Android: ${{ matrix.arch }}"
               exit 1
             fi
-            $CLANG test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
+            $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/$CLANG test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           else
             gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           fi
@@ -214,27 +214,17 @@ jobs:
       run: |
         cp -r opencvsharp/lib/* test
 
-    - name: Prepare tiny-android rootfs
-      if: matrix.os == 'android' && matrix.arch == 'arm64'
-      run: |
-        echo "::group::Downloading Android NDK"
-        wget https://dl.google.com/android/repository/android-ndk-r27c-linux.zip
-        echo "::endgroup::"
-
-        echo "::group::Unzipping Android NDK"
-        unzip -q android-ndk-r27c-linux.zip
-        echo "::endgroup::"
-
-        echo "::group::Setting up tiny-android rootfs"
-        mkdir -p test/{bin, lib64}
-        NDK=./android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/34
-        cp $NDK/{libc.so,libm.so,libdl.so,liblog.so} test/system/lib64/
-
     - name: Run Test
       if: matrix.os != 'android' && matrix.arch != 'x64'
       run: |
         if [[ "${{ matrix.image }}" == "" ]]; then
           cd test && ./test.exe
+        elif [[ "${{ matrix.os }}" == "android" && "${{ matrix.arch }}" == "arm64" ]]; then
+          docker run -d --rm --privileged -p 5555:5555 -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} redroid/redroid
+          adb connect localhost:5555
+          adb devices
+          adb push -a test /data/local/tmp/
+          adb shell 'cd /data/local/tmp/test && ./test.exe'
         else
           docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} bash -c "cd test && ./test.exe"
         fi
