@@ -311,4 +311,4 @@ jobs:
     - name: Run Tests
       run: |
         chmod +x test/test.exe
-        docker exec runner bash -c "cd test && ./test.exe"
+        docker exec runner bash -c "cd test && ls && ldd ./test.exe && ./test.exe"
