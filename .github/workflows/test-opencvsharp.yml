@@ -281,4 +281,5 @@ jobs:
 
     - name: Run Tests
       run: |
+        chmod +x test/test.exe
         docker exec builder bash -c "cd test && ./test.exe"
