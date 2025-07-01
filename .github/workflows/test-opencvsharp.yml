@@ -262,6 +262,7 @@ jobs:
   more-docker-test:
     name: More Docker Test
     runs-on: ${{ matrix.runs-on }}
+    continue-on-error: true
     defaults:
       run:
         shell: bash
@@ -357,7 +358,6 @@ jobs:
         docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
 
     - name: Run Tests
-      continue-on-error: true
       run: |
         chmod +x test/test.exe
         docker exec runner bash -c "cd test && ls && ldd ./test.exe && ./test.exe"
