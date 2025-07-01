@@ -219,7 +219,13 @@ jobs:
         if [[ "${{ matrix.os }}" == "android" && "${{ matrix.arch }}" == "arm64" ]]; then
           sudo apt install adb
           docker run -d --rm --privileged -p 5555:5555 -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} redroid/redroid
-          adb connect localhost:5555
+          for i in {1..30}; do
+            if adb connect localhost:5555 2>/dev/null; then
+              break
+            fi
+            echo "[$i/30] ADB not ready, retrying after 2s..."
+            sleep 2
+          done
           adb devices
           adb push -a test /data/local/tmp/
           adb shell 'cd /data/local/tmp/test && ./test.exe'
