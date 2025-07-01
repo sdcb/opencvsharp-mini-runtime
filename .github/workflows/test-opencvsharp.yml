@@ -217,6 +217,7 @@ jobs:
       if: matrix.os != 'android' || matrix.arch != 'x64'
       run: |
         if [[ "${{ matrix.os }}" == "android" && "${{ matrix.arch }}" == "arm64" ]]; then
+          apt install adb
           docker run -d --rm --privileged -p 5555:5555 -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} redroid/redroid
           adb connect localhost:5555
           adb devices
