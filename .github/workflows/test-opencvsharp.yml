@@ -286,7 +286,7 @@ jobs:
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:8 }
+        # - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:8 } # debian:8 is not supported on arm64
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:10 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
