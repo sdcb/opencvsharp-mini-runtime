@@ -35,7 +35,7 @@ jobs:
         - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
         - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
-        - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: android,      arch: x64,   runs-on: ubuntu-24.04 }
 
     steps:
     - name: Download OpenCvSharp Artifacts
