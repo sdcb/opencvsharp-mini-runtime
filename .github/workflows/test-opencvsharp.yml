@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Test OpenCvSharp
+    name: Fast Test
     runs-on: ${{ matrix.runs-on }}
     defaults:
       run:
@@ -229,7 +229,7 @@ jobs:
         path: test
 
   android-x64-test:
-    name: Test for Android x64
+    name: Android x64 Test
     runs-on: ubuntu-24.04
     needs: test
 
@@ -255,3 +255,30 @@ jobs:
         script: |
           adb push -a test /data/local/tmp/
           adb shell 'cd /data/local/tmp/test && ./test.exe'
+
+  more-docker-test:
+    name: More Docker Test
+    runs-on: ${{ matrix.runs-on }}
+    defaults:
+      run:
+        shell: bash
+    needs: test
+    strategy:
+      matrix:
+        include:
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7 }
+    steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: test-${{ matrix.os }}-${{ matrix.arch }}
+        path: test
+
+    - name: Start Docker Container
+      run: |
+        docker run -d --name builder -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
+
+    - name: Run Tests
+      run: |
+        docker exec builder bash -c "cd test && ./test.exe"
