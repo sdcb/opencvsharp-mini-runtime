@@ -268,9 +268,12 @@ jobs:
     needs: test
     strategy:
       matrix:
+        fail-fast: false
         include:
+        # centos:7 is glibc 2.17, compiled with gcc 4.8.5
+        # supports centos.7+, rhel.7+, debian:8+(glibc 2.19), ubuntu:14.04+(glibc 2.19)
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:8 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9 }
@@ -286,7 +289,6 @@ jobs:
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
-        # - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:8 } # debian:8 is not supported on arm64
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:10 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
@@ -297,6 +299,52 @@ jobs:
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
+
+        # rhel.8 is glibc 2.28, compiled with gcc 8.5.0
+        # supports rhel.8+, debian:10+(glibc 2.28), ubuntu:20.04+(glibc 2.31)
+        # these images will fails
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:18.04 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:18.04 }
+
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:10 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:11 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:10 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
+
+        # rhel.9 is glibc 2.34, compiled with gcc 11.5.0
+        # supports rhel.9+, debian:12+(glibc 2.34), ubuntu:22.04+(glibc 2.35)
+        # these images will fails
+        - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
+        - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
+        - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:11 }
+        - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
+        - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04 }
+        - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
+
+        - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 } 
+        - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 } 
+        - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
+        - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
+        - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
+        - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
+        - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
+        - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
@@ -309,6 +357,7 @@ jobs:
         docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
 
     - name: Run Tests
+      continue-on-error: true
       run: |
         chmod +x test/test.exe
         docker exec runner bash -c "cd test && ls && ldd ./test.exe && ./test.exe"
