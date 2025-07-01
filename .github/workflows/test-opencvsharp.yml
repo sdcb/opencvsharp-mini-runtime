@@ -187,7 +187,6 @@ jobs:
             gcc -std=c99 test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           elif [[ "${{ matrix.os }}" == "android" ]]; then
             API=24
-            ls -lR $ANDROID_NDK/toolchains/llvm/prebuilt/
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
               CLANG=aarch64-linux-android${API}-clang
             elif [[ "${{ matrix.arch }}" == "x64" ]]; then
@@ -215,7 +214,7 @@ jobs:
         cp -r opencvsharp/lib/* test
 
     - name: Run Test
-      if: matrix.os != 'android' && matrix.arch != 'x64'
+      if: matrix.os != 'android' || matrix.arch != 'x64'
       run: |
         if [[ "${{ matrix.image }}" == "" ]]; then
           cd test && ./test.exe
