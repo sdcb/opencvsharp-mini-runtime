@@ -268,8 +268,8 @@ jobs:
         shell: bash
     needs: test
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         include:
         # centos:7 is glibc 2.17, compiled with gcc 4.8.5
         # supports centos.7+, rhel.7+, debian:8+(glibc 2.19), ubuntu:14.04+(glibc 2.19)
