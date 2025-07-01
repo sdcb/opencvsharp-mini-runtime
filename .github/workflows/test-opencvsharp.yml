@@ -270,8 +270,8 @@ jobs:
       matrix:
         include:
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:8 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:9 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:8 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:10 }
@@ -284,8 +284,8 @@ jobs:
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:8 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:9 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:8 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:10 }
