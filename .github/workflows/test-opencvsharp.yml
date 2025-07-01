@@ -240,6 +240,9 @@ jobs:
         name: test-android-x64
         path: test
 
+    - name: chmod+x
+      run: chmod +x test/test.exe
+
     - name: Enable KVM group perms
       run: |
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -267,7 +270,33 @@ jobs:
       matrix:
         include:
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:8 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:9 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:8 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:10 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:11 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:14.04 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:16.04 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:18.04 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:8 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:9 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:8 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:10 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:14.04 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:16.04 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:18.04 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
@@ -277,9 +306,9 @@ jobs:
 
     - name: Start Docker Container
       run: |
-        docker run -d --name builder -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
+        docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
 
     - name: Run Tests
       run: |
         chmod +x test/test.exe
-        docker exec builder bash -c "cd test && ./test.exe"
+        docker exec runner bash -c "cd test && ./test.exe"
