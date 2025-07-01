@@ -216,16 +216,16 @@ jobs:
     - name: Run Test
       if: matrix.os != 'android' || matrix.arch != 'x64'
       run: |
-        if [[ "${{ matrix.image }}" == "" ]]; then
-          cd test && ./test.exe
-        elif [[ "${{ matrix.os }}" == "android" && "${{ matrix.arch }}" == "arm64" ]]; then
+        if [[ "${{ matrix.os }}" == "android" && "${{ matrix.arch }}" == "arm64" ]]; then
           docker run -d --rm --privileged -p 5555:5555 -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} redroid/redroid
           adb connect localhost:5555
           adb devices
           adb push -a test /data/local/tmp/
           adb shell 'cd /data/local/tmp/test && ./test.exe'
-        else
+        elif [[ "${{ matrix.image }}" != "" ]]; then
           docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} bash -c "cd test && ./test.exe"
+        else
+          cd test && ./test.exe
         fi
 
     - name: Enable KVM group perms(android-x64 only)
