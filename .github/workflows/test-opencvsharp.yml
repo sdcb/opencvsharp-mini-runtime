@@ -217,10 +217,13 @@ jobs:
       if: matrix.os != 'android' || matrix.arch != 'x64'
       run: |
         if [[ "${{ matrix.os }}" == "android" && "${{ matrix.arch }}" == "arm64" ]]; then
+          echo "::group::Running on Android ARM64"
           sudo apt install adb
           sudo apt install linux-modules-extra-`uname -r`
           sudo modprobe binder_linux devices="binder,hwbinder,vndbinder"
-          
+          sudo modprobe ashmem_linux
+          echo "::endgroup::"
+
           docker run -d --rm --privileged -p 5555:5555 -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} redroid/redroid
           until adb connect localhost:5555; do
             echo "ReDroid ADB not ready, retrying..."
