@@ -222,15 +222,31 @@ jobs:
           cd test && ./test.exe
         fi
 
-    - name: Enable KVM group perms(android-x64 only)
-      if: matrix.os == 'android' && matrix.arch == 'x64'
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-${{ matrix.os }}-${{ matrix.arch }}
+        path: test
+
+  android-x64-test:
+    name: Test for Android x64
+    runs-on: ubuntu-24.04
+    needs: test
+
+    steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: test-android-x64
+        path: test
+
+    - name: Enable KVM group perms
       run: |
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
 
     - name: Run Test on Android
-      if: matrix.os == 'android' && matrix.arch == 'x64'
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 28
@@ -239,9 +255,3 @@ jobs:
         script: |
           adb push -a test /data/local/tmp/
           adb shell 'cd /data/local/tmp/test && ./test.exe'
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-${{ matrix.os }}-${{ matrix.arch }}
-        path: test
