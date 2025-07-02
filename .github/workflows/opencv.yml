@@ -54,9 +54,9 @@ jobs:
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: alpine.3.15,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
-        # - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
+        - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
         - { os: alpine.3.19,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.19 }
-        # - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
+        - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
         - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
         - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
         # Uncomment the following lines to enable additional platforms(but not necessary for OpenCVSharp):
@@ -136,7 +136,7 @@ jobs:
           script=$(
             cat <<'EOS'
             set -eux
-            apk add --no-cache build-base cmake nasm
+            apk add --no-cache build-base cmake nasm linux-headers
         EOS
           )
         fi
