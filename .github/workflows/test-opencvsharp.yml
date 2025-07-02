@@ -387,7 +387,7 @@ jobs:
         - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
 
         # alpine 3.22 is musl-libc 1.2.5, compiled with gcc 14.2.0
-        # should supports alpine:3.13+(musl-libc 1.2.2))
+        # should supports alpine:3.13+(musl-libc 1.2.2)
         - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.13 } # musl-libc 1.2.2
         - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.14 }
         - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
