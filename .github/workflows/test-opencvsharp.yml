@@ -28,18 +28,10 @@ jobs:
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
-        - { os: alpine.3.15,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
-        - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
-        - { os: alpine.3.19,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.19 }
-        - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.22 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.22 }
         - { os: android,      arch: arm64, runs-on: ubuntu-24.04 }
         - { os: android,      arch: x64,   runs-on: ubuntu-24.04 }
-        # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-        # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-        # - { os: win11,        arch: x64,   runs-on: windows-2025 }
-        # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
-        # - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
-        # - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
     steps:
     - name: Download OpenCvSharp Artifacts
       env:  
@@ -284,19 +276,9 @@ jobs:
         - { os: osx,          arch: arm64, runs-on: macos-15 }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x64,   runs-on: windows-2025 }
+        - { os: win,          arch: x86,   runs-on: windows-2022 }
+        - { os: win,          arch: x86,   runs-on: windows-2025 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
-        # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-22.04, expect-fails: true }
-        # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-22.04-arm, expect-fails: true }
-        # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-        # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-        # - { os: osx.15,       arch: arm64, runs-on: macos-14 }
-        # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
-        # - { os: win11,        arch: x64,   runs-on: windows-2022 }
-        # - { os: win11,        arch: x64,   runs-on: windows-2025 }
-        # - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04 }
-        # - { os: rhel.9,       arch: x64,   runs-on: ubuntu-24.04 }
-        # - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm }
-        # - { os: rhel.9,       arch: arm64, runs-on: ubuntu-24.04-arm }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
@@ -323,13 +305,11 @@ jobs:
   docker-test:
     name: Docker Test
     runs-on: ${{ matrix.runs-on }}
-    continue-on-error: true
     defaults:
       run:
         shell: bash
     needs: raw-test
     strategy:
-      fail-fast: false
       matrix:
         include:
         # centos:7 is glibc 2.17, compiled with gcc 4.8.5
@@ -365,13 +345,12 @@ jobs:
         # rhel.8 is glibc 2.28, compiled with gcc 8.5.0
         # supports rhel.8+, debian:10+(glibc 2.28), ubuntu:20.04+(glibc 2.31)
         # these images will fails
-        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7 }
-        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7 }
-        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9 }
-        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9 }
-        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:18.04 }
-        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:18.04 }
-
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7,     expect-fails: true }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9,     expect-fails: true }
+        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:18.04, expect-fails: true }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7,     expect-fails: true }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9,     expect-fails: true }
+        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:18.04, expect-fails: true }
         - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
         - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:10 }
@@ -389,36 +368,16 @@ jobs:
         - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
         - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
 
-        # rhel.9 is glibc 2.34, compiled with gcc 11.5.0
-        # supports rhel.9+, debian:12+(glibc 2.34), ubuntu:22.04+(glibc 2.35)
-        # these images will fails
-        # - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
-        # - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
-        # - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:11 }
-        # - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
-        # - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04 }
-        # - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
-
-        # - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 } 
-        # - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 } 
-        # - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
-        # - { os: rhel.9,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
-        # - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
-        # - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
-        # - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
-        # - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
-
         # ubuntu 22.04 is glibc 2.35, compiled with gcc 11.2.0
         # supports ubuntu:22.04+, debian:11+(glibc 2.31), ubuntu:20.04+(glibc 2.31)
         # these images will fails
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: debian:11 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
-
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 } 
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8, expect-fails: true }
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: debian:11,     expect-fails: true }
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04,  expect-fails: true }
+        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8, expect-fails: true }
+        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11,     expect-fails: true }
+        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04,  expect-fails: true }
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
         - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 } 
         - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
         - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
@@ -427,32 +386,31 @@ jobs:
         - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
         - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
 
-        # ubuntu 24.04 is glibc 2.38, compiled with gcc 13.2.0
-        # supports ubuntu:24.04+ only
-        # these images will fails
-        # - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 } 
-        # - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
-        # - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 } 
-        # - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
-        # - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
-        # - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
-        
-        # - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
-        # - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
+        # alpine 3.22 is musl-libc 1.2.5, compiled with gcc 14.2.0
+        # should supports alpine:3.13+(musl-libc 1.2.2))
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.13 } # musl-libc 1.2.2
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.14 }
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.16 } # musl-libc 1.2.3
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.17 }
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.18 } # musl-libc 1.2.4
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.19 } # musl-libc 1.2.4_git20230717
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.20 } # musl-libc 1.2.5
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.21 }
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.22 }
+        - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:edge }
 
-        # alpine 3.15 is musl-libc 1.2.2, compiled with gcc 10.3.1
-        # supports alpine:3.15+
-        - { os: alpine.3.15,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
-        - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
-        - { os: alpine.3.15,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.19 }
-        - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
-
-        # alpine 3.19 is musl-libc 1.2.4, compiled with gcc 13.2.1
-        # supports alpine:3.19+
-        - { os: alpine.3.19,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.19 }
-        - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
-        - { os: alpine.3.19,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 } # test reverse compatibility
-        - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 } # test reverse compatibility
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.13 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.14 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.16 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.17 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.18 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.20 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.21 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.22 }
+        - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:edge }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
@@ -465,6 +423,7 @@ jobs:
         docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} tail -f /dev/null
 
     - name: Run Tests
+      continue-on-error: ${{ matrix.expect-fails || false }}
       run: |
         chmod +x test/test.exe
         docker exec runner /bin/sh -c "cd test && ls && ldd ./test.exe && ./test.exe"
