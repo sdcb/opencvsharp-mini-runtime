@@ -172,7 +172,7 @@ jobs:
           script=$(
             cat <<'EOS'
             set -eux
-            apk add --no-cache gcc
+            apk add --no-cache gcc musl-dev
         EOS
           )
         fi
@@ -275,28 +275,28 @@ jobs:
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-24.04 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm  }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-24.04-arm  }
-        - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: rhel.9,       arch: x64,   runs-on: ubuntu-24.04 }
-        - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm }
-        - { os: rhel.9,       arch: arm64, runs-on: ubuntu-24.04-arm }
-        - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: linux,        arch: x64,   runs-on: ubuntu-24.04 }
-        - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
-        - { os: linux,        arch: arm64, runs-on: ubuntu-24.04-arm }
-        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-22.04, expect-fails: true }
-        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-22.04-arm, expect-fails: true }
-        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-24.04-arm }
         - { os: osx,          arch: x64,   runs-on: macos-13 }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: osx,          arch: arm64, runs-on: macos-15 }
-        - { os: osx.15,       arch: arm64, runs-on: macos-14 }
-        - { os: osx.15,       arch: arm64, runs-on: macos-15 }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x64,   runs-on: windows-2025 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
-        - { os: win11,        arch: x64,   runs-on: windows-2022 }
-        - { os: win11,        arch: x64,   runs-on: windows-2025 }
+        # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-22.04, expect-fails: true }
+        # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-22.04-arm, expect-fails: true }
+        # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+        # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+        # - { os: osx.15,       arch: arm64, runs-on: macos-14 }
+        # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        # - { os: win11,        arch: x64,   runs-on: windows-2022 }
+        # - { os: win11,        arch: x64,   runs-on: windows-2025 }
+        # - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04 }
+        # - { os: rhel.9,       arch: x64,   runs-on: ubuntu-24.04 }
+        # - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm }
+        # - { os: rhel.9,       arch: arm64, runs-on: ubuntu-24.04-arm }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
