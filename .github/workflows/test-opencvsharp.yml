@@ -68,6 +68,7 @@ jobs:
 
         #define CV_8UC3               16        /* 8-bit unsigned, 3 channels */
         #define IMWRITE_JPEG_QUALITY   1
+        #define IMWRITE_WEBP_QUALITY  64
 
         /* core */
         extern uint64         core_Mat_sizeof(void);
