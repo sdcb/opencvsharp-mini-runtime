@@ -132,7 +132,7 @@ jobs:
             yum install -y gcc cmake3 gcc-c++ make nasm
         EOS
           )
-        elif [[ "${{ matrix.os }}" == "alpine" ]]; then
+        elif [[ "${{ matrix.os }}" =~ ^alpine ]]; then
           script=$(
             cat <<'EOS'
             set -eux
