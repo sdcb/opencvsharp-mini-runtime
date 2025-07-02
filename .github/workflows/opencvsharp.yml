@@ -117,7 +117,7 @@ jobs:
           )
         fi
         echo "Executing script in Docker container: $script"
-        docker exec builder bash -c "$script"
+        docker exec builder /bin/sh -c "$script"
 
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
@@ -138,7 +138,7 @@ jobs:
           )
         fi
         echo "Executing script in Docker container: $script"
-        docker exec builder bash -c "$script"
+        docker exec builder /bin/sh -c "$script"
 
     - name: Configure OpenCvSharp
       run: |
@@ -186,7 +186,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           bash -c "$script"
         else
-          docker exec builder bash -c "$script"
+          docker exec builder /bin/sh -c "$script"
         fi
 
     - name: Build OpenCvSharp
@@ -206,7 +206,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           bash -c "$script"
         else
-          docker exec builder bash -c "$script"
+          docker exec builder /bin/sh -c "$script"
         fi
 
     - name: Strip OpenCvSharpExtern
@@ -237,7 +237,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           bash -c "$script"
         else
-          docker exec builder bash -c "$script"
+          docker exec builder /bin/sh -c "$script"
         fi
 
     - name: Show OpenCvSharp Artifacts
