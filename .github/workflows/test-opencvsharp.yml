@@ -278,14 +278,19 @@ jobs:
         - { os: linux,        arch: x64,   runs-on: ubuntu-24.04 }
         - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
         - { os: linux,        arch: arm64, runs-on: ubuntu-24.04-arm }
-        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-22.04 }     # expects fails
-        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-22.04-arm } # expects fails
+        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-22.04, expect-fails: true }
+        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-22.04-arm, expect-fails: true }
         - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
         - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-        - { os: macos.13,     arch: x64,   runs-on: macos.13 }
-        - { os: macos.14,     arch: arm64, runs-on: macos.14 }
-        - { os: macos.14,     arch: arm64, runs-on: macos.15 }
-        - { os: macos.15,     arch: arm64, runs-on: macos.15 }
+        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: arm64, runs-on: macos-14 }
+        - { os: osx,          arch: arm64, runs-on: macos-15 }
+        - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        - { os: win,          arch: x64,   runs-on: windows-2022 }
+        - { os: win,          arch: x64,   runs-on: windows-2025 }
+        - { os: win,          arch: arm64, runs-on: windows-11-arm }
+        - { os: win.11,       arch: x64,   runs-on: windows-2022 }
+        - { os: win.11,       arch: x64,   runs-on: windows-2025 }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
@@ -294,9 +299,20 @@ jobs:
         path: test
 
     - name: Run Tests
+      continue-on-error: ${{ matrix.expect-fails || false }}
       run: |
         chmod +x test/test.exe
-        cd test && ls && ldd ./test.exe && ./test.exe
+        cd test && ls
+
+        if [[ ${{ matrix.os }} =~ ^osx ]]; then
+          otool -L ./test.exe || ${{ matrix.expect-fails }}
+          ./test.exe || ${{ matrix.expect-fails }}
+        elif [[ ${{ matrix.os }} =~ win ]]; then
+          ./test.exe
+        else
+          ldd ./test.exe
+          ./test.exe
+        fi
 
   docker-test:
     name: Docker Test
@@ -305,7 +321,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    needs: build
+    needs: raw-test
     strategy:
       fail-fast: false
       matrix:
