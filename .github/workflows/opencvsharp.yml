@@ -146,13 +146,12 @@ jobs:
           cat <<'EOS'
           set -eux
 
-          OpenCV_DIR="${{ github.workspace }}/opencv/lib/cmake/opencv4"
-          EXTRA_FLAGS=""
+          EXTRA_FLAGS=()
 
           if [[ "${{ matrix.os }}" =~ ^win ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/${{ matrix.arch }}/vc17/staticlib"
             if [[ "${{ matrix.arch }}" == "x86" ]]; then
-              EXTRA_FLAGS+=" -A Win32"
+              EXTRA_FLAGS+=( "-A" "Win32" )
             fi
 
           elif [[ "${{ matrix.image }}" =~ ^oraclelinux ]]; then
@@ -162,18 +161,20 @@ jobs:
             fi
 
           elif [[ "${{ matrix.os }}" =~ ^alpine ]]; then
-            EXTRA_FLAGS+=" -DCMAKE_SHARED_LINKER_FLAGS=\"-static-libstdc++\ -static-libgcc\""
+            EXTRA_FLAGS+=( "-DCMAKE_SHARED_LINKER_FLAGS=-static-libstdc++ -static-libgcc" )
 
           elif [[ ${{ matrix.os }} == "android" ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/sdk/native/jni"
-            EXTRA_FLAGS+=" -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake"
-            EXTRA_FLAGS+=" -DANDROID_PLATFORM=android-24"
-            EXTRA_FLAGS+=" -DANDROID_STL=c++_static"
+            EXTRA_FLAGS+=(
+                "-DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake"
+                "-DANDROID_PLATFORM=android-24"
+                "-DANDROID_STL=c++_static"
+            )
           
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-              EXTRA_FLAGS+=" -DANDROID_ABI=arm64-v8a"
+              EXTRA_FLAGS+=( "-DANDROID_ABI=arm64-v8a" )
             elif [[ "${{ matrix.arch }}" == "x64" ]]; then
-              EXTRA_FLAGS+=" -DANDROID_ABI=x86_64"
+              EXTRA_FLAGS+=( "-DANDROID_ABI=x86_64" )
             fi
           fi
 
@@ -181,9 +182,9 @@ jobs:
           cmake \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencvsharp/build" \
             -D OpenCV_DIR="$OpenCV_DIR" \
-            $EXTRA_FLAGS \
+            "${EXTRA_FLAGS[@]}" \
             ../src
-        EOS
+          EOS
         )
 
         if [[ "${{ matrix.image }}" == "" ]]; then
