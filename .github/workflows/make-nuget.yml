@@ -2,7 +2,7 @@ name: Make-NuGet
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/docker ]
     paths: [ '.github/workflows/make-nuget.yml' ]
   workflow_dispatch:
 
