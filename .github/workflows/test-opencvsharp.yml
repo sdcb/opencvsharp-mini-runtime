@@ -61,17 +61,14 @@ jobs:
         #include <stdlib.h>
         #include <assert.h>
 
-        /* ==== 简易类型 / 宏定义 ==== */
-        typedef long long uint64;               /* 对应 C# 的 UInt64 */
-        typedef int        ExceptionStatus;     /* OpenCvSharpExtern 约定: 0 = OK */
+        typedef long long uint64;
+        typedef int        ExceptionStatus;
         typedef struct { double val[4]; } MyCvScalar;
-        typedef struct cv_Mat cv_Mat;           /* 不需要知道内部实现 */
+        typedef struct cv_Mat cv_Mat;
 
-        /* OpenCV 常量（直接抄一份足够用即可） */
         #define CV_8UC3               16        /* 8-bit unsigned, 3 channels */
         #define IMWRITE_JPEG_QUALITY   1
 
-        /* ==== C API 声明 ==== */
         /* core */
         extern uint64         core_Mat_sizeof(void);
         extern ExceptionStatus core_Mat_new3(int rows,int cols,int type, MyCvScalar scalar, cv_Mat **returnValue);
@@ -80,7 +77,6 @@ jobs:
         extern ExceptionStatus imgcodecs_imwrite(const char *filename, cv_Mat *img, int *params,int paramsLength,int *returnValue);
         extern ExceptionStatus imgcodecs_imread (const char *filename,int flags, cv_Mat **returnValue);
 
-        /* ==== 帮助函数：检查返回值 ==== */
         static void CHECK_OK(ExceptionStatus st, const char *msg)
         {
             if(st != 0) { fprintf(stderr,"%s failed: %d\n", msg, st);  exit(st); }
@@ -95,12 +91,10 @@ jobs:
             printf("sizeof(Mat) reported by native = %llu\n",
                   (unsigned long long)core_Mat_sizeof());
 
-            /* 1. 先创建一张 256x256、彩色渐变图像 ----------------------------- */
             cv_Mat *img = NULL;
             MyCvScalar black = {0};
             CHECK_OK(core_Mat_new3(256, 256, CV_8UC3, black, &img), "core_Mat_new3");
 
-            /* 通过指针手动绘制一个 BGR 渐变: B = x, G = y, R = 128            */
             unsigned char *data = NULL;
             extern ExceptionStatus core_Mat_data(cv_Mat *self, unsigned char **returnValue);
             CHECK_OK(core_Mat_data(img, &data), "core_Mat_data");
@@ -109,31 +103,33 @@ jobs:
                 for(int x = 0; x < 256; ++x)
                 {
                     unsigned char *pix = data + (y*256 + x)*3;
-                    pix[0] = (unsigned char)x;   /* Blue  渐变 */
-                    pix[1] = (unsigned char)y;   /* Green 渐变 */
-                    pix[2] = 128;                /* Red   固定 */
+                    pix[0] = (unsigned char)x;
+                    pix[1] = (unsigned char)y;
+                    pix[2] = 128;
                 }
             }
 
-            /* 2. 保存为 PNG -------------------------------------------------- */
             int ok = 0;
             CHECK_OK(imgcodecs_imwrite("test.png", img, NULL, 0, &ok), "imwrite PNG");
             CHECK_BOOL(ok, "imwrite PNG");
+            printf("Image saved as test.png\n");
 
-            /* 3. 读取刚写出的 PNG ------------------------------------------- */
             cv_Mat *img2 = NULL;
             CHECK_OK(imgcodecs_imread("test.png", /*flags=*/1, &img2), "imread PNG");
-            /* 不需要检查 NULL, 因为 C API 出错会抛异常，已在上一步捕获 */
+            printf("Image loaded from test.png\n");
 
-            /* 4. 以 JPEG 质量 90 再保存为 JPG -------------------------------- */
             int jpegParams[2] = { IMWRITE_JPEG_QUALITY, 90 };
             CHECK_OK(imgcodecs_imwrite("test.jpg", img2,
                                       jpegParams, 2, &ok), "imwrite JPG");
             CHECK_BOOL(ok, "imwrite JPG");
+            printf("Image saved as test.jpg at quality: 90\n");
 
-            printf("PNG and JPG written successfully.\n");
+            int webpParams[2] = { IMWRITE_WEBP_QUALITY, 90 };
+            CHECK_OK(imgcodecs_imwrite("test.webp", img2,
+                                      webpParams, 2, &ok), "imwrite WEBP");
+            CHECK_BOOL(ok, "imwrite WEBP");
+            printf("Image saved as test.webp at quality: 90\n");
 
-            /* 5. 释放资源 ---------------------------------------------------- */
             core_Mat_delete(img);
             core_Mat_delete(img2);
 
@@ -253,13 +249,11 @@ jobs:
   raw-test:
     name: Raw Test
     runs-on: ${{ matrix.runs-on }}
-    continue-on-error: true
     defaults:
       run:
         shell: bash
     needs: build
     strategy:
-      fail-fast: false
       matrix:
         include:
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04 }
@@ -285,6 +279,7 @@ jobs:
         - { os: osx,          arch: x64,   runs-on: macos-13 }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: osx,          arch: arm64, runs-on: macos-15 }
+        - { os: osx.15,       arch: arm64, runs-on: macos-14 }
         - { os: osx.15,       arch: arm64, runs-on: macos-15 }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x64,   runs-on: windows-2025 }
