@@ -133,7 +133,7 @@ jobs:
           script=$(
             cat <<'EOS'
             set -eux
-            apk add --no-cache build-base cmake bash
+            apk add --no-cache build-base cmake
         EOS
           )
         fi
