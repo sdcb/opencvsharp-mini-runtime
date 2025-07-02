@@ -289,8 +289,8 @@ jobs:
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x64,   runs-on: windows-2025 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
-        - { os: win.11,       arch: x64,   runs-on: windows-2022 }
-        - { os: win.11,       arch: x64,   runs-on: windows-2025 }
+        - { os: win11,        arch: x64,   runs-on: windows-2022 }
+        - { os: win11,        arch: x64,   runs-on: windows-2025 }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
