@@ -120,8 +120,7 @@ jobs:
         EOS
           )
         fi
-        echo "Executing script in Docker container: $script"
-        docker exec builder bash -c "$script"
+        docker exec builder /bin/sh -c "$script"
 
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
@@ -141,8 +140,7 @@ jobs:
         EOS
           )
         fi
-        echo "Executing script in Docker container: $script"
-        docker exec builder bash -c "$script"
+        docker exec builder /bin/sh -c "$script"
 
     - name: Configure OpenCV
       run: |
@@ -187,7 +185,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           bash -c "$script"
         else
-          docker exec builder bash -c "$script"
+          docker exec builder /bin/sh -c "$script"
         fi
 
     - name: Build OpenCV
@@ -207,7 +205,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           bash -c "$script"
         else
-          docker exec builder bash -c "$script"
+          docker exec builder /bin/sh -c "$script"
         fi
 
     - name: Install OpenCV
@@ -226,7 +224,7 @@ jobs:
         if [[ "${{ matrix.image }}" == "" ]]; then
           bash -c "$script"
         else
-          docker exec builder bash -c "$script"
+          docker exec builder /bin/sh -c "$script"
         fi
 
     - name: Show Build Artifacts
