@@ -161,6 +161,9 @@ jobs:
               ln -s /usr/bin/cmake3 /usr/bin/cmake
             fi
 
+          elif [[ "${{ matrix.os }}" =~ ^alpine ]]; then
+            $EXTRA_FLAGS+=" -DCMAKE_SHARED_LINKER_FLAGS='-static-libstdc++ -static-libgcc'"
+
           elif [[ ${{ matrix.os }} == "android" ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/sdk/native/jni"
             EXTRA_FLAGS+=" -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake"
@@ -251,11 +254,14 @@ jobs:
           android)
             $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf -d OpenCvSharpExtern/libOpenCvSharpExtern.so | grep NEEDED
             ;;
-          linux)
-            ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
+          win)
+            dumpbin /DEPENDENTS OpenCvSharpExtern/OpenCvSharpExtern.dll
             ;;
           osx*)
             otool -L OpenCvSharpExtern/libOpenCvSharpExtern.dylib
+            ;;
+          *) # Linux
+            ldd OpenCvSharpExtern/libOpenCvSharpExtern.so
             ;;
         esac
 
