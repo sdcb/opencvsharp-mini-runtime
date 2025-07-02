@@ -9,13 +9,11 @@ on:
 env:
   OPENCV_VERSION: 4.11.0
   OPENCV_CMAKE_ARGS: >-
-    -D CMAKE_BUILD_TYPE=RELEASE
+    -D CMAKE_BUILD_TYPE=Release
+    -D OPENCV_FORCE_3RDPARTY_BUILD=ON
     -D OPENCV_EXTRA_MODULES_PATH="${{ github.workspace }}/opencv_contrib/modules"
     -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencv/build/install"
     -D BUILD_LIST=core,imgproc,imgcodecs
-    -D BUILD_PNG=ON
-    -D BUILD_TIFF=ON
-    -D ENABLE_CXX11=ON
     -D BUILD_SHARED_LIBS=OFF
     -D BUILD_EXAMPLES=OFF
     -D BUILD_DOCS=OFF
@@ -44,9 +42,9 @@ jobs:
     strategy:
       matrix:
         include:
-        - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04 }
         - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-        - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
         - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
