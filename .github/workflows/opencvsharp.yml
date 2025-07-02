@@ -162,8 +162,7 @@ jobs:
             fi
 
           elif [[ "${{ matrix.os }}" =~ ^alpine ]]; then
-            # EXTRA_FLAGS="${EXTRA_FLAGS} -DCMAKE_SHARED_LINKER_FLAGS='-static-libstdc++ -static-libgcc'"
-            echo "Do nothing for now"
+            EXTRA_FLAGS="${EXTRA_FLAGS} -DCMAKE_SHARED_LINKER_FLAGS='-static-libstdc++ -static-libgcc'"
 
           elif [[ ${{ matrix.os }} == "android" ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/sdk/native/jni"
@@ -256,7 +255,7 @@ jobs:
             $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf -d OpenCvSharpExtern/libOpenCvSharpExtern.so | grep NEEDED
             ;;
           win)
-            dumpbin /DEPENDENTS OpenCvSharpExtern/OpenCvSharpExtern.dll
+            echo "Can't show dependencies for Windows DLLs"
             ;;
           osx*)
             otool -L OpenCvSharpExtern/libOpenCvSharpExtern.dylib
