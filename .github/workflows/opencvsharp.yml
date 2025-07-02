@@ -24,25 +24,29 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
-          - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
-          - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
-          - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-          - { os: win,          arch: x64,   runs-on: windows-2022 }
-          - { os: win,          arch: x86,   runs-on: windows-2022 }
-          - { os: win11,        arch: x64,   runs-on: windows-2025 }
-          - { os: win,          arch: arm64, runs-on: windows-11-arm }
-          - { os: osx,          arch: x64,   runs-on: macos-13 }
-          - { os: osx,          arch: arm64, runs-on: macos-14 }
-          - { os: osx.15,       arch: arm64, runs-on: macos-15 }
-          - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
-          - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
-          - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
-          - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
-          - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
-          - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
-          - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
-          - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: ubuntu.22.04, : x64,   runs-on: ubuntu-22.04 }
+        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: win,          arch: x64,   runs-on: windows-2022 }
+        - { os: win,          arch: x86,   runs-on: windows-2022 }
+        - { os: win,          arch: arm64, runs-on: windows-11-arm }
+        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: arm64, runs-on: macos-14 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
+        - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
+        - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
+        - { os: alpine.3.15,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
+        - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
+        - { os: alpine.3.19,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.19 }
+        - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
+        - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
+        - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
+        # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+        # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+        # - { os: win11,        arch: x64,   runs-on: windows-2025 }
+        # - { os: osx.15,       arch: arm64, runs-on: macos-15 }
+        # - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
+        # - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
 
     steps:
     - name: Checkout
@@ -121,7 +125,14 @@ jobs:
           script=$(
             cat <<'EOS'
             set -eux
-            yum install -y gcc cmake3 gcc-c++ make nasm
+            yum install -y gcc cmake3 gcc-c++ make
+        EOS
+          )
+        elif [[ "${{ matrix.os }}" =~ ^alpine ]]; then
+          script=$(
+            cat <<'EOS'
+            set -eux
+            apk add --no-cache build-base cmake
         EOS
           )
         fi
