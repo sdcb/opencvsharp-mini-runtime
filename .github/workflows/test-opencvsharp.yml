@@ -346,6 +346,38 @@ jobs:
         - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
         - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
         - { os: rhel.9,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
+
+        # ubuntu 22.04 is glibc 2.35, compiled with gcc 11.2.0
+        # supports ubuntu:22.04+, debian:11+(glibc 2.31), ubuntu:20.04+(glibc 2.31)
+        # these images will fails
+        - { os: linux,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
+        - { os: linux,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
+        - { os: linux,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:11 }
+        - { os: linux,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11 }
+        - { os: linux,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04 }
+        - { os: linux,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
+
+        - { os: linux,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 } 
+        - { os: linux,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 } 
+        - { os: linux,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
+        - { os: linux,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
+        - { os: linux,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
+        - { os: linux,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
+        - { os: linux,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
+        - { os: linux,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
+
+        # ubuntu 24.04 is glibc 2.38, compiled with gcc 13.2.0
+        # supports ubuntu:24.04+ only
+        # these images will fails
+        - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 } 
+        - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9 }
+        - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 } 
+        - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
+        - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
+        - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
+        
+        - { os: ubuntu.24.04,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
+        - { os: ubuntu.24.04,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
