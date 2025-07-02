@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Fast Test
+  build:
+    name: Build Test
     runs-on: ${{ matrix.runs-on }}
     defaults:
       run:
@@ -213,15 +213,6 @@ jobs:
       run: |
         cp -r opencvsharp/lib/* test
 
-    - name: Run Test
-      if: matrix.os != 'android'
-      run: |
-        if [[ "${{ matrix.image }}" != "" ]]; then
-          docker run -d --name runner -v "$PWD":${{ github.workspace }} -w ${{ github.workspace }} ${{ matrix.image }} bash -c "cd test && ./test.exe"
-        else
-          cd test && ./test.exe
-        fi
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -231,7 +222,7 @@ jobs:
   android-x64-test:
     name: Android x64 Test
     runs-on: ubuntu-24.04
-    needs: test
+    needs: build
 
     steps:
     - name: Download Artifacts
@@ -259,14 +250,62 @@ jobs:
           adb push -a test /data/local/tmp/
           adb shell 'cd /data/local/tmp/test && ./test.exe'
 
-  more-docker-test:
-    name: More Docker Test
+  raw-test:
+    name: Raw Test
     runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
     defaults:
       run:
         shell: bash
-    needs: test
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: centos.7,     arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: rhel.8,       arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm  }
+        - { os: rhel.8,       arch: arm64, runs-on: ubuntu-24.04-arm  }
+        - { os: rhel.9,       arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: rhel.9,       arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: rhel.9,       arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: rhel.9,       arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: linux,        arch: x64,   runs-on: ubuntu-22.04 }
+        - { os: linux,        arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm }
+        - { os: linux,        arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-22.04 }     # expects fails
+        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-22.04-arm } # expects fails
+        - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
+        - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: macos.13,     arch: x64,   runs-on: macos.13 }
+        - { os: macos.14,     arch: arm64, runs-on: macos.14 }
+        - { os: macos.14,     arch: arm64, runs-on: macos.15 }
+        - { os: macos.15,     arch: arm64, runs-on: macos.15 }
+    steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: test-${{ matrix.os }}-${{ matrix.arch }}
+        path: test
+
+    - name: Run Tests
+      run: |
+        chmod +x test/test.exe
+        cd test && ls && ldd ./test.exe && ./test.exe
+
+  docker-test:
+    name: Docker Test
+    runs-on: ${{ matrix.runs-on }}
+    continue-on-error: true
+    defaults:
+      run:
+        shell: bash
+    needs: build
     strategy:
       fail-fast: false
       matrix:
