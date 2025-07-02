@@ -305,8 +305,8 @@ jobs:
         cd test && ls
 
         if [[ ${{ matrix.os }} =~ ^osx ]]; then
-          otool -L ./test.exe || ${{ matrix.expect-fails }}
-          ./test.exe || ${{ matrix.expect-fails }}
+          otool -L ./test.exe
+          ./test.exe
         elif [[ ${{ matrix.os }} =~ win ]]; then
           ./test.exe
         else
