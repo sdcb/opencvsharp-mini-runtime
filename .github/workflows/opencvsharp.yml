@@ -163,6 +163,7 @@ jobs:
 
           elif [[ "${{ matrix.os }}" =~ ^alpine ]]; then
             # EXTRA_FLAGS="${EXTRA_FLAGS} -DCMAKE_SHARED_LINKER_FLAGS='-static-libstdc++ -static-libgcc'"
+            echo "Do nothing for now"
 
           elif [[ ${{ matrix.os }} == "android" ]]; then
             OpenCV_DIR="${{ github.workspace }}/opencv/sdk/native/jni"
