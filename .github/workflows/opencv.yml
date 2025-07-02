@@ -53,8 +53,8 @@ jobs:
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
-        - { os: alpine.3.15,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
-        - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
+        # - { os: alpine.3.15,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.15 }
+        # - { os: alpine.3.15,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.15 }
         - { os: alpine.3.19,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.19 }
         - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
         - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
