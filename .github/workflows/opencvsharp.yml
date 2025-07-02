@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         include:
-        - { os: ubuntu.22.04, : x64,   runs-on: ubuntu-22.04 }
+        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04 }
         - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
@@ -41,6 +41,7 @@ jobs:
         - { os: alpine.3.19,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:3.19 }
         - { os: android,      arch: arm64, runs-on: ubuntu-22.04 }
         - { os: android,      arch: x64,   runs-on: ubuntu-22.04 }
+        # Uncomment the following lines to enable additional platforms:
         # - { os: ubuntu.24.04, arch: x64,   runs-on: ubuntu-24.04 }
         # - { os: ubuntu.24.04, arch: arm64, runs-on: ubuntu-24.04-arm }
         # - { os: win11,        arch: x64,   runs-on: windows-2025 }
