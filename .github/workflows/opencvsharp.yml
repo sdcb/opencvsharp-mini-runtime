@@ -184,7 +184,7 @@ jobs:
             -D OpenCV_DIR="$OpenCV_DIR" \
             "${EXTRA_FLAGS[@]}" \
             ../src
-          EOS
+        EOS
         )
 
         if [[ "${{ matrix.image }}" == "" ]]; then
