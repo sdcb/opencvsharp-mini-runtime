@@ -2,7 +2,7 @@ name: Build-OpenCV
 
 on:
   push:
-    branches: [ main, feature/docker ]
+    branches: [ feature/docker ]
     paths: [ .github/workflows/opencv.yml ]
   workflow_dispatch:
 
