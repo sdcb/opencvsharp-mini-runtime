@@ -1,0 +1,57 @@
+﻿name: push-native-nuget
+on:
+  push:
+    branches:
+      - feature/docker
+    paths:
+      - .github/workflows/push-nuget.yml
+  workflow_dispatch:
+  
+jobs:
+  build-all:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        include:
+        - { os: ubuntu.22.04, arch: x64,   }
+        - { os: ubuntu.22.04, arch: arm64, }
+        - { os: win,          arch: x64,   }
+        - { os: win,          arch: x86,   }
+        - { os: win,          arch: arm64, }
+        - { os: osx,          arch: x64,   }
+        - { os: osx,          arch: arm64, }
+        - { os: centos.7,     arch: x64,   }
+        - { os: centos.7,     arch: arm64, }
+        - { os: linux,        arch: x64,   }
+        - { os: linux,        arch: arm64, }
+        - { os: linux-musl,   arch: x64,   }
+        - { os: linux-musl,   arch: arm64, }
+        - { os: android,      arch: arm64, }
+        - { os: android,      arch: x64,   }
+  
+    steps:
+    - name: Download Artifacts
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        echo "Fetching latest successful run of branch ${{ github.ref_name }}"
+        RUN_ID=$(gh run list -R ${{ github.repository }} \
+                  --workflow=make-nuget.yml \
+                  --branch=${{ github.ref_name }} \
+                  --status=success --limit=1 \
+                  --json databaseId | jq -r '.[0].databaseId')
+        echo "Run id = $RUN_ID"
+        
+        echo "Download artifact ${{ matrix.os }}-${{ matrix.arch }}"
+        gh run download -R ${{ github.repository }} $RUN_ID --name nuget-${{ matrix.os }}-${{ matrix.arch }} --dir nupkg-src
+
+        echo "::group::Artifact tree"
+        ls -lR nupkg-src
+        echo "::endgroup::"
+
+    - name: Push nupkg to NuGet
+      run: |
+        for nupkg in nupkg-src/*.nupkg; do
+          echo "Uploading $nupkg"
+          echo dotnet nuget push "$nupkg" --source "nuget.org" --skip-duplicate --api-key ${{ secrets.NUGET_API_KEY }}
+        done
