@@ -2,7 +2,7 @@ name: Build-OpenCV
 
 on:
   push:
-    branches: [ feature/docker ]
+    branches: [ feature/dnn ]
     paths: [ .github/workflows/opencv.yml ]
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ env:
     -D OPENCV_FORCE_3RDPARTY_BUILD=ON
     -D OPENCV_EXTRA_MODULES_PATH="${{ github.workspace }}/opencv_contrib/modules"
     -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencv/build/install"
-    -D BUILD_LIST=core,imgproc,imgcodecs
+    -D BUILD_LIST=core,imgproc,imgcodecs,features2d,dnn
     -D BUILD_SHARED_LIBS=OFF
     -D BUILD_EXAMPLES=OFF
     -D BUILD_DOCS=OFF
@@ -27,7 +27,8 @@ env:
     -D WITH_1394=OFF
     -D WITH_GTK=OFF
     -D WITH_OPENEXR=OFF
-    -D WITH_PROTOBUF=OFF
+    -D WITH_PROTOBUF=ON
+    -D BUILD_PROTOBUF=ON
     -D WITH_QUIRC=OFF
     -D OPENCV_ENABLE_NONFREE=OFF
 
