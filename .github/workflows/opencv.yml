@@ -155,8 +155,7 @@ jobs:
             ln -s /usr/bin/cmake3 /usr/bin/cmake
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
               echo "::group::Disable NEON in libwebp for CentOS 7 ARM64"
-              sed -i 's/\<WEBP_USE_NEON\>/WEBP_USE_NEON_DISABLED/' opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
-              cat opencv/3rdparty/libwebp/src/dsp/yuv_neon.c
+              find opencv/3rdparty/libwebp/src/dsp -name '*_neon.c' -print -exec sed -i 's/\<WEBP_USE_NEON\>/WEBP_USE_NEON_DISABLED/g' {} \;
               echo "::endgroup::"
             fi
           elif [[ "${{ matrix.os }}" == "android" ]]; then
