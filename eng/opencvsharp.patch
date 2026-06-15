@@ -27,7 +27,7 @@ index 79109177..5a1845cb 100644
 -	find_package(Protobuf REQUIRED)
 -endif()
 -
-+file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp)
++file(GLOB OPENCVSHARP_FILES core*.cpp imgp*.cpp imgc*.cpp std*.cpp dnn.cpp)
  # On Windows, OpenCV is built as a static library; tell the Windows Pack config to look for static libs.
  # Also force /MT (static CRT) to match OpenCV's build configuration, and enable /MP for parallel compilation.
  # Add the vcpkg lib dir to the linker search path so that plain-name lib references in

@@ -56,7 +56,9 @@ jobs:
         typedef long long uint64;
         typedef int        ExceptionStatus;
         typedef struct { double val[4]; } MyCvScalar;
+        typedef struct { int width; int height; } MyCvSize;
         typedef struct cv_Mat cv_Mat;
+        typedef struct cv_dnn_Net cv_dnn_Net;
 
         #define CV_8UC3               16        /* 8-bit unsigned, 3 channels */
         #define IMWRITE_JPEG_QUALITY   1
@@ -66,9 +68,16 @@ jobs:
         extern uint64         core_Mat_sizeof(void);
         extern ExceptionStatus core_Mat_new3(int rows,int cols,int type, MyCvScalar scalar, cv_Mat **returnValue);
         extern ExceptionStatus core_Mat_delete(cv_Mat *self);
+        extern ExceptionStatus core_Mat_dims(cv_Mat *self, int *returnValue);
+        extern ExceptionStatus core_Mat_sizeAt(cv_Mat *self, int i, int *returnValue);
         /* imgcodecs */
         extern ExceptionStatus imgcodecs_imwrite(const char *filename, cv_Mat *img, int *params,int paramsLength,int *returnValue);
         extern ExceptionStatus imgcodecs_imread (const char *filename,int flags, cv_Mat **returnValue);
+        /* dnn */
+        extern ExceptionStatus dnn_Net_new(cv_dnn_Net **returnValue);
+        extern ExceptionStatus dnn_Net_delete(cv_dnn_Net *net);
+        extern ExceptionStatus dnn_Net_empty(cv_dnn_Net *net, int *returnValue);
+        extern ExceptionStatus dnn_blobFromImage(cv_Mat *image, double scalefactor, MyCvSize size, MyCvScalar mean, int swapRB, int crop, cv_Mat **returnValue);
 
         static void CHECK_OK(ExceptionStatus st, const char *msg)
         {
@@ -77,6 +86,13 @@ jobs:
         static void CHECK_BOOL(int ok, const char *msg)
         {
             if(!ok)    { fprintf(stderr,"%s returned false\n", msg);   exit(1); }
+        }
+        static void CHECK_EQ_INT(int actual, int expected, const char *msg)
+        {
+            if(actual != expected) {
+                fprintf(stderr, "%s expected %d, got %d\n", msg, expected, actual);
+                exit(1);
+            }
         }
 
         int main(void)
@@ -123,6 +139,32 @@ jobs:
             CHECK_BOOL(ok, "imwrite WEBP");
             printf("Image saved as test.webp at quality: 90\n");
 
+            cv_dnn_Net *net = NULL;
+            CHECK_OK(dnn_Net_new(&net), "dnn_Net_new");
+            CHECK_OK(dnn_Net_empty(net, &ok), "dnn_Net_empty");
+            CHECK_BOOL(ok, "new DNN Net should be empty");
+
+            cv_Mat *blob = NULL;
+            MyCvSize blobSize = {64, 64};
+            MyCvScalar mean = {0};
+            CHECK_OK(dnn_blobFromImage(img2, 1.0, blobSize, mean, 0, 0, &blob), "dnn_blobFromImage");
+
+            int dims = 0;
+            int dim0 = 0, dim1 = 0, dim2 = 0, dim3 = 0;
+            CHECK_OK(core_Mat_dims(blob, &dims), "core_Mat_dims(blob)");
+            CHECK_OK(core_Mat_sizeAt(blob, 0, &dim0), "core_Mat_sizeAt(blob, 0)");
+            CHECK_OK(core_Mat_sizeAt(blob, 1, &dim1), "core_Mat_sizeAt(blob, 1)");
+            CHECK_OK(core_Mat_sizeAt(blob, 2, &dim2), "core_Mat_sizeAt(blob, 2)");
+            CHECK_OK(core_Mat_sizeAt(blob, 3, &dim3), "core_Mat_sizeAt(blob, 3)");
+            CHECK_EQ_INT(dims, 4, "DNN blob dims");
+            CHECK_EQ_INT(dim0, 1, "DNN blob N");
+            CHECK_EQ_INT(dim1, 3, "DNN blob C");
+            CHECK_EQ_INT(dim2, 64, "DNN blob H");
+            CHECK_EQ_INT(dim3, 64, "DNN blob W");
+            printf("DNN blob created with shape: %d x %d x %d x %d\n", dim0, dim1, dim2, dim3);
+
+            core_Mat_delete(blob);
+            dnn_Net_delete(net);
             core_Mat_delete(img);
             core_Mat_delete(img2);
 
