@@ -2,7 +2,7 @@ name: Build-OpenCV
 
 on:
   push:
-    branches: [ feature/docker ]
+    branches: [ main ]
     paths: [ .github/workflows/opencv.yml ]
   workflow_dispatch:
 
@@ -47,7 +47,7 @@ jobs:
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
-        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: x64,   runs-on: macos-15-intel }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
@@ -67,7 +67,7 @@ jobs:
 
     steps:
     - name: Checkout OpenCV repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: opencv/opencv
         ref: ${{ env.OPENCV_VERSION }}
@@ -75,7 +75,7 @@ jobs:
         fetch-depth: 1
 
     - name: Checkout OpenCV Contrib repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: opencv/opencv_contrib
         ref: ${{ env.OPENCV_VERSION }}
@@ -235,7 +235,7 @@ jobs:
         cp -r opencv/build/install/* artifacts
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: opencv-${{ matrix.os }}-${{ matrix.arch }}
         path: artifacts

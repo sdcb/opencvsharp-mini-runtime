@@ -164,7 +164,7 @@ jobs:
     # 3. 上传结果
     # ------------------------------------------------------------
     - name: Upload nupkg artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-${{ matrix.os }}-${{ matrix.arch }}
         path: nupkgs/*.nupkg
@@ -181,7 +181,7 @@ jobs:
           - { os: win,          arch: x64,   runs-on: windows-2022,     upstream: win-x64 }
           - { os: win,          arch: x86,   runs-on: windows-2022,     upstream: win-x86 }
           - { os: win,          arch: arm64, runs-on: windows-11-arm,   upstream: win-arm64 }
-          - { os: osx,          arch: x64,   runs-on: macos-13,         upstream: osx-x64 }
+          - { os: osx,          arch: x64,   runs-on: macos-15-intel,   upstream: osx-x64 }
           - { os: osx,          arch: arm64, runs-on: macos-14,         upstream: osx-arm64 }
           - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     upstream: centos.7-x64 }
           - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, upstream: centos.7-arm64 }
@@ -199,7 +199,7 @@ jobs:
 
     steps:
       - name: Download NuGet artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nuget-${{ matrix.os }}-${{ matrix.arch }}
           path: ./nupkg
@@ -260,7 +260,7 @@ jobs:
 
     steps:
       - name: Download NuGet artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nuget-${{ matrix.os }}-${{ matrix.arch }}
           path: ./nupkg
@@ -322,7 +322,7 @@ jobs:
 
     steps:
       - name: Download nupkg artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           path: nupkgs
@@ -344,7 +344,7 @@ jobs:
           echo "Upload completed."
 
       - name: Bundle upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-bundle
           path: nupkgs/*.nupkg

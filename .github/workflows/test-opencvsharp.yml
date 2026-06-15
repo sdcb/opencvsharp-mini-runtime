@@ -22,7 +22,7 @@ jobs:
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
-        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: x64,   runs-on: macos-15-intel }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
@@ -213,7 +213,7 @@ jobs:
         cp -r opencvsharp/lib/* test
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: test-${{ matrix.os }}-${{ matrix.arch }}
         path: test
@@ -225,7 +225,7 @@ jobs:
 
     steps:
     - name: Download Artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: test-android-x64
         path: test
@@ -271,7 +271,7 @@ jobs:
         - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-24.04 }
         - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
         - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-24.04-arm }
-        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: x64,   runs-on: macos-15-intel }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: osx,          arch: arm64, runs-on: macos-15 }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
@@ -281,7 +281,7 @@ jobs:
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
     steps:
     - name: Download Artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: test-${{ matrix.os }}-${{ matrix.arch }}
         path: test
@@ -407,7 +407,7 @@ jobs:
         - { os: alpine.3.22,  arch: arm64, runs-on: ubuntu-22.04-arm, image: alpine:edge }
     steps:
     - name: Download Artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: test-${{ matrix.os }}-${{ matrix.arch }}
         path: test

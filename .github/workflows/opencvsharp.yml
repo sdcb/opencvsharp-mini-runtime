@@ -28,7 +28,7 @@ jobs:
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
-        - { os: osx,          arch: x64,   runs-on: macos-13 }
+        - { os: osx,          arch: x64,   runs-on: macos-15-intel }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
         - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
@@ -48,7 +48,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Download OpenCV Artifacts
       env:  
@@ -66,7 +66,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Checkout OpenCvSharp
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with: 
         repository: shimat/opencvsharp
         ref: ${{ env.OPENCVSHARP_VERSION }}
@@ -274,7 +274,7 @@ jobs:
         ls -lR
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: opencvsharp-${{ matrix.os }}-${{ matrix.arch }}
         path: artifacts
