@@ -1,3 +1,17 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 3a19c82b..c362a24d 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -30,5 +30,9 @@ option(NO_INSTALL_TO_TEST "Skip copying built DLL to the test project directory
+ if(MSVC)
+   add_compile_options(/guard:cf /GS)
++  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+   # /HIGHENTROPYVA: enable high-entropy 64-bit ASLR
+   add_link_options(/guard:cf /DYNAMICBASE /HIGHENTROPYVA)
++  else()
++    add_link_options(/guard:cf /DYNAMICBASE)
++  endif()
+ endif()
 diff --git a/src/OpenCvSharpExtern/CMakeLists.txt b/src/OpenCvSharpExtern/CMakeLists.txt
 index 79109177..5a1845cb 100644
 --- a/src/OpenCvSharpExtern/CMakeLists.txt
@@ -17,14 +31,11 @@ index 79109177..5a1845cb 100644
  # On Windows, OpenCV is built as a static library; tell the Windows Pack config to look for static libs.
  # Also force /MT (static CRT) to match OpenCV's build configuration, and enable /MP for parallel compilation.
  # Add the vcpkg lib dir to the linker search path so that plain-name lib references in
-@@ -37,5 +31,10 @@ find_package(Iconv QUIET)
+@@ -37,5 +31,7 @@ find_package(Iconv QUIET)
  if(NOT Iconv_FOUND)
    add_compile_definitions(NO_ICONV=1)
  endif()
 +add_compile_definitions(NO_HIGHGUI=1 NO_VIDEO=1 NO_STITCHING=1 NO_ML=1 NO_CONTRIB=1)
 +
-+if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-+	add_link_options(/HIGHENTROPYVA:NO)
-+endif()
- 
+
  if(OpenCV_FOUND)
