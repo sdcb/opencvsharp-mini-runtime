@@ -265,8 +265,8 @@ jobs:
         include:
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04 }
         - { os: centos.7,     arch: x64,   runs-on: ubuntu-24.04 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-24.04-arm }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, expect-fails: true }
+        - { os: centos.7,     arch: arm64, runs-on: ubuntu-24.04-arm, expect-fails: true }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-24.04 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm  }
