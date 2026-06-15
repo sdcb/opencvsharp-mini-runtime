@@ -178,6 +178,7 @@ jobs:
           cd opencvsharp && mkdir build && cd build
           cmake \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencvsharp/build" \
+            -D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -D OpenCV_DIR="$OpenCV_DIR" \
             "$@" \
             ../src
