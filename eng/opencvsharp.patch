@@ -31,11 +31,11 @@ index 79109177..5a1845cb 100644
  # On Windows, OpenCV is built as a static library; tell the Windows Pack config to look for static libs.
  # Also force /MT (static CRT) to match OpenCV's build configuration, and enable /MP for parallel compilation.
  # Add the vcpkg lib dir to the linker search path so that plain-name lib references in
-@@ -37,5 +31,7 @@ find_package(Iconv QUIET)
+@@ -37,5 +31,6 @@ find_package(Iconv QUIET)
  if(NOT Iconv_FOUND)
    add_compile_definitions(NO_ICONV=1)
  endif()
+-
 +add_compile_definitions(NO_HIGHGUI=1 NO_VIDEO=1 NO_STITCHING=1 NO_ML=1 NO_CONTRIB=1)
 +
-
  if(OpenCV_FOUND)
