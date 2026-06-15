@@ -2,7 +2,7 @@ name: Test-OpenCvSharp
 
 on:
   push:
-    branches: [ feature/docker ]
+    branches: [ main ]
     paths: [ '.github/workflows/test-opencvsharp.yml' ]
   workflow_dispatch:
 
@@ -134,12 +134,6 @@ jobs:
         EOF
         cat test/test.c
 
-    - name: Setup MSVC(Windows only)
-      uses: ilammy/msvc-dev-cmd@v1
-      if: startsWith(matrix.os, 'win')
-      with:
-        arch: ${{ matrix.arch }}
-
     - name: Pull Docker Image
       if: matrix.image != ''
       run: |
@@ -171,16 +165,24 @@ jobs:
         echo "Executing script in Docker container: $script"
         docker exec builder /bin/sh -c "$script"
 
+    - name: Build Test (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: |
+        for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
+        if not defined VSINSTALL exit /b 1
+        call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=${{ matrix.arch }}
+        cd test
+        cl /nologo /EHsc test.c ..\opencvsharp\lib\OpenCvSharpExtern.lib /link /OUT:test.exe
+
     - name: Build Test
+      if: runner.os != 'Windows'
       run: |
         script=$(
           cat <<'EOS'
           set -eux
           cd test
-          if [[ "${{ runner.os }}" == Windows ]]; then
-            export MSYS2_ARG_CONV_EXCL="*"
-            cl /nologo /EHsc test.c ../opencvsharp/lib/OpenCvSharpExtern.lib /link /OUT:test.exe
-          elif [[ "${{ matrix.os }}" =~ ^osx ]]; then
+          if [[ "${{ matrix.os }}" =~ ^osx ]]; then
             gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
           elif [[ "${{ matrix.os }}" == "centos.7" ]]; then
             gcc -std=c99 test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe

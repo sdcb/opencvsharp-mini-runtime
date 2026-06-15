@@ -2,7 +2,7 @@
 on:
   push:
     branches:
-      - feature/docker
+      - main
     paths:
       - .github/workflows/push-nuget.yml
   workflow_dispatch:

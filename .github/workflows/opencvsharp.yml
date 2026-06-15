@@ -2,8 +2,8 @@ name: Build-OpenCvSharp
 
 on:
   push:
-    branches: 
-      - feature/docker
+    branches:
+      - main
     paths: 
       - .github/workflows/opencvsharp.yml
       - 'eng/opencvsharp.patch'
