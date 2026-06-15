@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  NUGET_VERSION_PREFIX: 4.11.0
+  NUGET_VERSION_PREFIX: 4.13.0
 
 permissions:
   packages: write

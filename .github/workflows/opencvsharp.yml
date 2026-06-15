@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  OPENCVSHARP_VERSION: 4.11.0.20250507
+  OPENCVSHARP_VERSION: 4.13.0.20260602
 
 jobs:
   build:
