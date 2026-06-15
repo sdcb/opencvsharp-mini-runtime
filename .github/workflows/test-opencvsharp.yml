@@ -18,15 +18,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
         - { os: osx,          arch: x64,   runs-on: macos-15-intel }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.22 }
@@ -148,7 +144,7 @@ jobs:
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
       run: |
-        if [[ "${{ matrix.os }}" == "centos.7" || "${{ matrix.os }}" =~ "rhel." ]]; then
+        if [[ "${{ matrix.os }}" =~ "rhel." ]]; then
           script=$(
             cat <<'EOS'
             set -eux
@@ -185,8 +181,6 @@ jobs:
           cd test
           if [[ "${{ matrix.os }}" =~ ^osx ]]; then
             gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
-          elif [[ "${{ matrix.os }}" == "centos.7" ]]; then
-            gcc -std=c99 test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           elif [[ "${{ matrix.os }}" == "android" ]]; then
             API=24
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
@@ -263,18 +257,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-24.04 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-24.04-arm, expect-fails: true }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-24.04 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm  }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-24.04-arm  }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-24.04 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-24.04-arm }
         - { os: osx,          arch: x64,   runs-on: macos-15-intel }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: osx,          arch: arm64, runs-on: macos-15 }
@@ -317,43 +303,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        # centos:7 is glibc 2.17, compiled with gcc 4.8.5
-        # supports centos.7+, rhel.7+, debian:8+(glibc 2.19), ubuntu:14.04+(glibc 2.19)
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:8 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:10 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:11 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:14.04 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:16.04 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:18.04 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7,     expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9,     expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:10,    expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11,    expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12,    expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:14.04, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:16.04, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:18.04, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04, expect-fails: true }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04, expect-fails: true }
-
         # rhel.8 is glibc 2.28, compiled with gcc 8.5.0
         # supports rhel.8+, debian:10+(glibc 2.28), ubuntu:20.04+(glibc 2.31)
         # these images will fails
-        - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: centos:7,     expect-fails: true }
         - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: debian:9,     expect-fails: true }
         - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:18.04, expect-fails: true }
-        - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: centos:7,     expect-fails: true }
         - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:9,     expect-fails: true }
         - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:18.04, expect-fails: true }
         - { os: rhel.8,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 } 
@@ -372,24 +326,6 @@ jobs:
         - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04 }
         - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
         - { os: rhel.8,     arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
-
-        # ubuntu 22.04 is glibc 2.35, compiled with gcc 11.2.0
-        # supports ubuntu:22.04+, debian:11+(glibc 2.31), ubuntu:20.04+(glibc 2.31)
-        # these images will fails
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8, expect-fails: true }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: debian:11,     expect-fails: true }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:20.04,  expect-fails: true }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8, expect-fails: true }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:11,     expect-fails: true }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:20.04,  expect-fails: true }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:9, expect-fails: true }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: debian:12 } 
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:22.04 }
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     image: ubuntu:24.04 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:9, expect-fails: true }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: debian:12 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:22.04 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, image: ubuntu:24.04 }
 
         # alpine 3.22 is musl-libc 1.2.5, compiled with gcc 14.2.0
         # should supports alpine:3.13+(musl-libc 1.2.2)

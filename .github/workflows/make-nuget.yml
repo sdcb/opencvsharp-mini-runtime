@@ -23,15 +23,11 @@ jobs:
     strategy:
       matrix:
         include:
-        - { os: ubuntu.22.04, arch: x64,   upstream: ubuntu.22.04-x64 }
-        - { os: ubuntu.22.04, arch: arm64, upstream: ubuntu.22.04-arm64 }
         - { os: win,          arch: x64,   upstream: win-x64 }
         - { os: win,          arch: x86,   upstream: win-x86 }
         - { os: win,          arch: arm64, upstream: win-arm64 }
         - { os: osx,          arch: x64,   upstream: osx-x64 }
         - { os: osx,          arch: arm64, upstream: osx-arm64 }
-        - { os: centos.7,     arch: x64,   upstream: centos.7-x64 }
-        - { os: centos.7,     arch: arm64, upstream: centos.7-arm64 }
         - { os: linux,        arch: x64,   upstream: rhel.8-x64 }
         - { os: linux,        arch: arm64, upstream: rhel.8-arm64 }
         - { os: linux-musl,   arch: x64,   upstream: alpine.3.22-x64 }
@@ -176,15 +172,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04,     upstream: ubuntu.22.04-x64 }
-          - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm, upstream: ubuntu.22.04-arm64 }
           - { os: win,          arch: x64,   runs-on: windows-2022,     upstream: win-x64 }
           - { os: win,          arch: x86,   runs-on: windows-2022,     upstream: win-x86 }
           - { os: win,          arch: arm64, runs-on: windows-11-arm,   upstream: win-arm64 }
           - { os: osx,          arch: x64,   runs-on: macos-15-intel,   upstream: osx-x64 }
           - { os: osx,          arch: arm64, runs-on: macos-14,         upstream: osx-arm64 }
-          - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     upstream: centos.7-x64 }
-          - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, upstream: centos.7-arm64 }
           - { os: linux,        arch: x64,   runs-on: ubuntu-22.04,     upstream: rhel.8-x64 }
           - { os: linux,        arch: arm64, runs-on: ubuntu-22.04-arm, upstream: rhel.8-arm64 }
           # - { os: linux-musl,   arch: x64,   runs-on: ubuntu-22.04,     upstream: alpine.3.22-x64 }

@@ -42,15 +42,11 @@ jobs:
     strategy:
       matrix:
         include:
-        - { os: ubuntu.22.04, arch: x64,   runs-on: ubuntu-22.04 }
-        - { os: ubuntu.22.04, arch: arm64, runs-on: ubuntu-22.04-arm }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
         - { os: osx,          arch: x64,   runs-on: macos-15-intel }
         - { os: osx,          arch: arm64, runs-on: macos-14 }
-        - { os: centos.7,     arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:7 }
-        - { os: centos.7,     arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:7 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.22 }
@@ -95,15 +91,7 @@ jobs:
     - name: Initialize Docker Container
       if: matrix.image != ''
       run: |
-        if [[ "${{ matrix.os }}" == "centos.7" ]]; then
-          script=$(
-            cat <<'EOS'
-            set -eux
-            yum install -y oracle-epel-release-el7
-            yum-config-manager --enable ol7_developer_epel
-        EOS
-          )
-        elif [[ "${{ matrix.os }}" == "rhel.8" ]]; then
+        if [[ "${{ matrix.os }}" == "rhel.8" ]]; then
           script=$(
             cat <<'EOS'
             set -eux
@@ -123,7 +111,7 @@ jobs:
     - name: Install Dependencies in Docker Container
       if: matrix.image != ''
       run: |
-        if [[ "${{ matrix.os }}" == "centos.7" || "${{ matrix.os }}" =~ "rhel." ]]; then
+        if [[ "${{ matrix.os }}" =~ "rhel." ]]; then
           script=$(
             cat <<'EOS'
             set -eux
@@ -150,14 +138,6 @@ jobs:
             EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
           elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
             EXTRA_FLAGS+=" -A Win32"
-          elif [[ ${{ matrix.os }} == "centos.7" ]]; then
-            EXTRA_FLAGS+=" -DCMAKE_C_FLAGS='-std=gnu99'"
-            ln -s /usr/bin/cmake3 /usr/bin/cmake
-            if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-              echo "::group::Disable NEON in libwebp for CentOS 7 ARM64"
-              find opencv/3rdparty/libwebp/src/dsp -name '*_neon.c' -print -exec sed -i 's/\<WEBP_USE_NEON\>/WEBP_USE_NEON_DISABLED/g' {} \;
-              echo "::endgroup::"
-            fi
           elif [[ "${{ matrix.os }}" == "android" ]]; then
             echo "Configuring for Android / ${{ matrix.arch }}"
           
