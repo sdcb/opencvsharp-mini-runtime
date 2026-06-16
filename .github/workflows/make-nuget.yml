@@ -217,13 +217,33 @@ jobs:
         run: |
           cat > TestApp/Program.cs <<'EOF'
           using OpenCvSharp;
+          using OpenCvSharp.Dnn;
           using System;
           class Program
           {
               static void Main()
               {
                   using Mat mat = new Mat(rows: 3, cols: 4, type: MatType.CV_8SC4);
+                  CheckDnn();
                   Console.WriteLine("OpenCvSharp nuget test good!");
+              }
+
+              static void CheckDnn()
+              {
+                  using Mat image = new Mat(32, 32, MatType.CV_8UC3, Scalar.All(1));
+                  using Net net = new Net();
+                  if (!net.Empty())
+                      throw new Exception("New DNN Net should be empty.");
+
+                  using Mat blob = CvDnn.BlobFromImage(image, 1.0, new Size(16, 16), Scalar.All(0), false, false);
+                  if (blob.Dims != 4 ||
+                      blob.Size(0) != 1 ||
+                      blob.Size(1) != 3 ||
+                      blob.Size(2) != 16 ||
+                      blob.Size(3) != 16)
+                  {
+                      throw new Exception($"Unexpected DNN blob shape: {blob.Size(0)}x{blob.Size(1)}x{blob.Size(2)}x{blob.Size(3)}");
+                  }
               }
           }
           EOF
@@ -276,6 +296,7 @@ jobs:
           # 写测试代码
           New-Item -Name "Program.cs" -ItemType "file" -Value @"
           using OpenCvSharp;
+          using OpenCvSharp.Dnn;
           using System;
           class Program
           {
@@ -284,7 +305,30 @@ jobs:
                   using (Mat mat = new Mat(rows: 3, cols: 4, type: MatType.CV_8SC4))
                   {
                   }
+                  CheckDnn();
                   Console.WriteLine("OpenCvSharp nuget test good! (.NET Framework)");
+              }
+
+              static void CheckDnn()
+              {
+                  using (Mat image = new Mat(32, 32, MatType.CV_8UC3, Scalar.All(1)))
+                  using (Net net = new Net())
+                  {
+                      if (!net.Empty())
+                          throw new Exception("New DNN Net should be empty.");
+
+                      using (Mat blob = CvDnn.BlobFromImage(image, 1.0, new Size(16, 16), Scalar.All(0), false, false))
+                      {
+                          if (blob.Dims != 4 ||
+                              blob.Size(0) != 1 ||
+                              blob.Size(1) != 3 ||
+                              blob.Size(2) != 16 ||
+                              blob.Size(3) != 16)
+                          {
+                              throw new Exception($"Unexpected DNN blob shape: {blob.Size(0)}x{blob.Size(1)}x{blob.Size(2)}x{blob.Size(3)}");
+                          }
+                      }
+                  }
               }
           }
           "@
