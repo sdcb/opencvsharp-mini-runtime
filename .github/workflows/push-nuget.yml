@@ -50,7 +50,7 @@ jobs:
       id: login
       uses: NuGet/login@v1
       with:
-        user: sdcb
+        user: sdflysha
 
     - name: Push nupkg to NuGet
       run: |
