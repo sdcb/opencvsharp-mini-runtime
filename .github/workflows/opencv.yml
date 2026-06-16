@@ -40,6 +40,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
 
     strategy:
+      fail-fast: false
       matrix:
         include:
         - { os: win,          arch: x64,   runs-on: windows-2022 }
@@ -134,10 +135,8 @@ jobs:
           cat <<'EOS'
           set -eux
           EXTRA_FLAGS=""
-          OPENCV_CMAKE_ARGS="${{ env.OPENCV_CMAKE_ARGS }}"
           if [[ "${{ matrix.os }}" == "osx" && "${{ matrix.arch }}" == "arm64" ]]; then
-            OPENCV_CMAKE_ARGS="${OPENCV_CMAKE_ARGS/-D BUILD_LIST=core,imgproc,imgcodecs,dnn/-D BUILD_LIST=core,imgproc,imgcodecs}"
-            OPENCV_CMAKE_ARGS="${OPENCV_CMAKE_ARGS/-D WITH_PROTOBUF=ON/-D WITH_PROTOBUF=OFF}"
+            EXTRA_FLAGS+=" -D BUILD_LIST=core,imgproc,imgcodecs -D WITH_PROTOBUF=OFF"
           fi
           if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
             EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
@@ -160,7 +159,7 @@ jobs:
           fi
 
           cd opencv && mkdir build && cd build
-          cmake $OPENCV_CMAKE_ARGS $EXTRA_FLAGS ..
+          cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
         EOS
         )
 
