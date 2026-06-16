@@ -1,9 +1,6 @@
 name: Build-OpenCV
 
 on:
-  push:
-    branches: [ main ]
-    paths: [ .github/workflows/opencv.yml ]
   workflow_dispatch:
 
 env:
@@ -13,7 +10,7 @@ env:
     -D OPENCV_FORCE_3RDPARTY_BUILD=ON
     -D OPENCV_EXTRA_MODULES_PATH="${{ github.workspace }}/opencv_contrib/modules"
     -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/opencv/build/install"
-    -D BUILD_LIST=core,imgproc,imgcodecs
+    -D BUILD_LIST=core,imgproc,imgcodecs,dnn
     -D BUILD_SHARED_LIBS=OFF
     -D BUILD_EXAMPLES=OFF
     -D BUILD_DOCS=OFF
@@ -27,7 +24,7 @@ env:
     -D WITH_1394=OFF
     -D WITH_GTK=OFF
     -D WITH_OPENEXR=OFF
-    -D WITH_PROTOBUF=OFF
+    -D WITH_PROTOBUF=ON
     -D WITH_QUIRC=OFF
     -D OPENCV_ENABLE_NONFREE=OFF
 
@@ -40,13 +37,14 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
 
     strategy:
+      fail-fast: false
       matrix:
         include:
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
         - { os: osx,          arch: x64,   runs-on: macos-15-intel }
-        - { os: osx,          arch: arm64, runs-on: macos-14 }
+        - { os: osx,          arch: arm64, runs-on: macos-15 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.22 }
@@ -134,6 +132,9 @@ jobs:
           cat <<'EOS'
           set -eux
           EXTRA_FLAGS=""
+          if [[ "${{ matrix.os }}" == "osx" && "${{ matrix.arch }}" == "arm64" ]]; then
+            EXTRA_FLAGS+=" -D BUILD_LIST=core,imgproc,imgcodecs -D WITH_PROTOBUF=OFF"
+          fi
           if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
             EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
           elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then

@@ -1,11 +1,17 @@
 ﻿name: push-nuget
 on:
   workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
   
 jobs:
   push:
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
         include:
         - { os: win,          arch: x64,   }
@@ -40,9 +46,15 @@ jobs:
         ls -lR nupkg-src
         echo "::endgroup::"
 
+    - name: NuGet Login
+      id: login
+      uses: NuGet/login@v1
+      with:
+        user: sdflysha
+
     - name: Push nupkg to NuGet
       run: |
         for nupkg in nupkg-src/*.nupkg; do
           echo "Uploading $nupkg"
-          dotnet nuget push "$nupkg" --source "nuget.org" --skip-duplicate --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push "$nupkg" --source "https://www.nuget.org/api/v2/package" --skip-duplicate --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
         done
