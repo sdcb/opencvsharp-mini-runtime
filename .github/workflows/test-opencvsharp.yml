@@ -22,6 +22,7 @@ jobs:
         - { os: win,          arch: x86,   runs-on: windows-2022 }
         - { os: win,          arch: arm64, runs-on: windows-11-arm }
         - { os: osx,          arch: x64,   runs-on: macos-15-intel }
+        - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: rhel.8,       arch: x64,   runs-on: ubuntu-22.04,     image: oraclelinux:8 }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm, image: oraclelinux:8 }
         - { os: alpine.3.22,  arch: x64,   runs-on: ubuntu-22.04,     image: alpine:3.22 }
@@ -303,6 +304,7 @@ jobs:
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-22.04-arm  }
         - { os: rhel.8,       arch: arm64, runs-on: ubuntu-24.04-arm  }
         - { os: osx,          arch: x64,   runs-on: macos-15-intel }
+        - { os: osx,          arch: arm64, runs-on: macos-14 }
         - { os: win,          arch: x64,   runs-on: windows-2022 }
         - { os: win,          arch: x64,   runs-on: windows-2025 }
         - { os: win,          arch: x86,   runs-on: windows-2022 }

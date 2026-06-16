@@ -12,6 +12,7 @@ jobs:
         - { os: win,          arch: x86,   }
         - { os: win,          arch: arm64, }
         - { os: osx,          arch: x64,   }
+        - { os: osx,          arch: arm64, }
         - { os: linux,        arch: x64,   }
         - { os: linux,        arch: arm64, }
         - { os: linux-musl,   arch: x64,   }
