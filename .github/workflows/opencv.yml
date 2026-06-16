@@ -1,9 +1,6 @@
 name: Build-OpenCV
 
 on:
-  push:
-    branches: [ main ]
-    paths: [ .github/workflows/opencv.yml ]
   workflow_dispatch:
 
 env:
