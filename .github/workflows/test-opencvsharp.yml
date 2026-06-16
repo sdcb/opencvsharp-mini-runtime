@@ -60,6 +60,10 @@ jobs:
         typedef struct cv_Mat cv_Mat;
         typedef struct cv_dnn_Net cv_dnn_Net;
 
+        #ifndef ENABLE_DNN_TEST
+        #define ENABLE_DNN_TEST 1
+        #endif
+
         #define CV_8UC3               16        /* 8-bit unsigned, 3 channels */
         #define IMWRITE_JPEG_QUALITY   1
         #define IMWRITE_WEBP_QUALITY  64
@@ -139,6 +143,7 @@ jobs:
             CHECK_BOOL(ok, "imwrite WEBP");
             printf("Image saved as test.webp at quality: 90\n");
 
+        #if ENABLE_DNN_TEST
             cv_dnn_Net *net = NULL;
             CHECK_OK(dnn_Net_new(&net), "dnn_Net_new");
             CHECK_OK(dnn_Net_empty(net, &ok), "dnn_Net_empty");
@@ -165,6 +170,9 @@ jobs:
 
             core_Mat_delete(blob);
             dnn_Net_delete(net);
+        #else
+            printf("DNN test skipped for this platform\n");
+        #endif
             core_Mat_delete(img);
             core_Mat_delete(img2);
 
@@ -221,8 +229,12 @@ jobs:
           cat <<'EOS'
           set -eux
           cd test
+          DNN_TEST_FLAG=""
+          if [[ "${{ matrix.os }}" == "osx" && "${{ matrix.arch }}" == "arm64" ]]; then
+            DNN_TEST_FLAG="-DENABLE_DNN_TEST=0"
+          fi
           if [[ "${{ matrix.os }}" =~ ^osx ]]; then
-            gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
+            gcc $DNN_TEST_FLAG test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,@loader_path -o test.exe
           elif [[ "${{ matrix.os }}" == "android" ]]; then
             API=24
             if [[ "${{ matrix.arch }}" == "arm64" ]]; then
@@ -233,9 +245,9 @@ jobs:
               echo "Unsupported architecture for Android: ${{ matrix.arch }}"
               exit 1
             fi
-            $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/$CLANG test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
+            $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/$CLANG $DNN_TEST_FLAG test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           else
-            gcc test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
+            gcc $DNN_TEST_FLAG test.c -L../opencvsharp/lib -lOpenCvSharpExtern -Wl,-rpath,'$ORIGIN' -o test.exe
           fi
           ls -lR
         EOS

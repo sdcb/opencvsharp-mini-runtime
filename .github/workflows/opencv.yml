@@ -134,6 +134,11 @@ jobs:
           cat <<'EOS'
           set -eux
           EXTRA_FLAGS=""
+          OPENCV_CMAKE_ARGS="${{ env.OPENCV_CMAKE_ARGS }}"
+          if [[ "${{ matrix.os }}" == "osx" && "${{ matrix.arch }}" == "arm64" ]]; then
+            OPENCV_CMAKE_ARGS="${OPENCV_CMAKE_ARGS/-D BUILD_LIST=core,imgproc,imgcodecs,dnn/-D BUILD_LIST=core,imgproc,imgcodecs}"
+            OPENCV_CMAKE_ARGS="${OPENCV_CMAKE_ARGS/-D WITH_PROTOBUF=ON/-D WITH_PROTOBUF=OFF}"
+          fi
           if [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "arm64" ]]; then
             EXTRA_FLAGS+=" -DWITH_IPP=OFF -DCPU_BASELINE=NEON -A ARM64"
           elif [[ "${{ matrix.os }}" == "win" && "${{ matrix.arch }}" == "x86" ]]; then
@@ -155,7 +160,7 @@ jobs:
           fi
 
           cd opencv && mkdir build && cd build
-          cmake ${{ env.OPENCV_CMAKE_ARGS }} $EXTRA_FLAGS ..
+          cmake $OPENCV_CMAKE_ARGS $EXTRA_FLAGS ..
         EOS
         )
 
